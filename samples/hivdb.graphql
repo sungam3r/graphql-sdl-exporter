@@ -1,0 +1,550 @@
+# This directive allows results to be deferred during execution
+directive @defer on
+  | FIELD
+
+schema {
+  query: Root
+}
+
+enum ASIAlgorithm {
+  HIVDB
+  ANRS
+  REGA
+}
+
+type AlgorithmComparison {
+  drugClass: DrugClass
+  drugScores: [ComparableDrugScore]
+}
+
+type AlignedGeneSequence {
+  gene: Gene
+  firstAA: Int
+  lastAA: Int
+  firstNA: Int
+  lastNA: Int
+  matchPcnt: Float
+  size: Int
+  prettyPairwise: PrettyPairwise
+  alignedNAs: String
+  alignedAAs: String
+  mutations(
+    filterOptions: [MutationSetFilterOption]
+    customList: [String]
+  ): [Mutation]
+  frameShifts: [FrameShift]
+}
+
+scalar Boolean
+
+type BoundMutationComment {
+  name: String
+  gene: Gene
+  drugClass: DrugClass
+  consensus: String @deprecated(reason: "Use `boundMutation { consensus }` instead.")
+  triggeredAAs: String @deprecated(reason: "Use `boundMutation { aas }` instead.")
+  type: CommentType
+  text: String
+  boundMutation: Mutation
+  highlightText: [String]
+}
+
+type BoundMutationPrevalence {
+  boundMutation: Mutation
+  matched: [MutationPrevalenceByAA]
+  others: [MutationPrevalenceByAA]
+}
+
+type BoundSubtype {
+  name: Subtype
+  distancePcnt: Float
+  display: String
+}
+
+enum CommentType {
+  Major
+  Accessory
+  NRTI
+  NNRTI
+  Other
+  Dosage
+}
+
+type CommentsByType {
+  mutationType: CommentType @deprecated(reason: "Use `commentType` instead.")
+  commentType: CommentType
+  comments: [BoundMutationComment]
+}
+
+type ComparableDrugScore {
+  drug: Drug
+  algorithm: String
+  SIR: SIR
+  interpretation: String
+  explanation: String
+}
+
+input CustomASIAlgorithm {
+  name: String
+  xml: String
+}
+
+type Drug {
+  name: DrugEnum
+  displayAbbr: String
+  fullName: String
+  drugClass: DrugClass
+}
+
+type DrugClass {
+  name: DrugClassEnum
+  fullName: String
+  drugs: [Drug]
+  gene: Gene
+}
+
+enum DrugClassEnum {
+  NRTI
+  NNRTI
+  PI
+  INSTI
+}
+
+enum DrugEnum {
+  ABC
+  AZT
+  D4T
+  DDI
+  FTC
+  LMV
+  TDF
+  ATV
+  DRV
+  FPV
+  IDV
+  LPV
+  NFV
+  SQV
+  TPV
+  DOR
+  EFV
+  ETR
+  NVP
+  RPV
+  BIC
+  DTG
+  EVG
+  RAL
+}
+
+type DrugPartialScore {
+  mutations: [Mutation]
+  score: Float
+}
+
+type DrugResistance {
+  version: HivdbVersion
+  gene: Gene
+  drugScores(
+    drugClass: DrugClassEnum
+  ): [DrugScore]
+  mutationsByTypes: [MutationsByType]
+  commentsByTypes: [CommentsByType]
+}
+
+type DrugScore {
+  drugClass: DrugClass
+  drug: Drug
+  SIR: SIR
+  score: Float
+  level: Int
+  text: String
+  partialScores: [DrugPartialScore]
+}
+
+scalar Float
+
+type FrameShift {
+  gene: Gene
+  position: Int
+  isInsertion: Boolean
+  isDeletion: Boolean
+  size: Int
+  NAs: String
+  text: String
+}
+
+type Gene {
+  name: GeneEnum
+  consensus: String
+  length: Int
+  drugClasses: [DrugClass]
+  mutationTypes: [MutationType]
+}
+
+enum GeneEnum {
+  PR
+  RT
+  IN
+}
+
+type HIVBoundSubtype {
+  display: String
+  displayWithoutDistance: String
+  subtype: HIVSubtype
+  genotype: HIVSubtype @deprecated(reason: "Use field `subtype` instead.")
+  displaySubtypes: [HIVSubtype]
+  displayGenotypes: [HIVSubtype] @deprecated(reason: "Use field `displaySubtypes` instead.")
+  firstNA: Int
+  lastNA: Int
+  distance: Float
+  distancePcnt: String
+  referenceAccession: String
+  referenceCountry: String
+  referenceYear: Int
+  discordanceList: [Int]
+}
+
+enum HIVClassificationLevel {
+  SPECIES
+  GROUP
+  SUBTYPE
+  CRF
+  SUBSUBTYPE
+}
+
+type HIVSubtype {
+  indexName: String
+  displayName: String
+  classificationLevel: HIVClassificationLevel
+}
+
+type HivdbVersion {
+  text: String
+  publishDate: String
+}
+
+scalar Int
+
+type Mutation {
+  gene: Gene
+  consensus: String
+  position: Int
+  AAs: String
+  triplet: String
+  insertedNAs: String
+  isInsertion: Boolean
+  isDeletion: Boolean
+  isIndel: Boolean
+  isAmbiguous: Boolean
+  isApobecMutation: Boolean
+  isApobecDRM: Boolean
+  isUnsequenced: Boolean
+  isDRM: Boolean
+  hasStop: Boolean
+  isUnusual: Boolean
+  isSDRM: Boolean
+  types: [MutationType]
+  primaryType: MutationType
+  comments: [BoundMutationComment]
+  text: String
+  shortText: String
+}
+
+type MutationPrevalence {
+  AA: String
+  subtype: MutationPrevalenceSubtype
+  totalNaive: Int
+  frequencyNaive: Int
+  percentageNaive: Float
+  totalTreated: Int
+  frequencyTreated: Int
+  percentageTreated: Float
+}
+
+type MutationPrevalenceByAA {
+  AA: String
+  subtypes: [MutationPrevalence]
+}
+
+type MutationPrevalenceSubtype {
+  name: String
+  stats: [MutationPrevalenceSubtypeStat]
+}
+
+type MutationPrevalenceSubtypeStat {
+  gene: Gene
+  totalNaive: Int
+  totalTreated: Int
+}
+
+enum MutationSetFilterOption {
+  APOBEC
+  APOBEC_DRM
+  DRM
+  DRP
+  notDRM
+  PI_DRM
+  NRTI_DRM
+  NNRTI_DRM
+  INSTI_DRM
+  SDRM
+  PI_TSM
+  NRTI_TSM
+  NNRTI_TSM
+  INSTI_TSM
+  GENE_PR
+  GENE_RT
+  GENE_IN
+  TYPE_MAJOR
+  TYPE_ACCESSORY
+  TYPE_NRTI
+  TYPE_NNRTI
+  TYPE_OTHER
+  INSERTION
+  DELETION
+  UNUSUAL
+  AMBIGUOUS
+  STOPCODON
+  CUSTOMLIST
+}
+
+enum MutationType {
+  NRTI
+  NNRTI
+  Major
+  Other
+  Accessory
+}
+
+type MutationsAnalysis {
+  validationResults: [ValidationResult]
+  drugResistance: [DrugResistance]
+  mutationPrevalences: [BoundMutationPrevalence]
+  algorithmComparison(
+    algorithms: [ASIAlgorithm]
+    customAlgorithms: [CustomASIAlgorithm]
+  ): [AlgorithmComparison]
+}
+
+type MutationsByType {
+  mutationType: MutationType
+  mutations: [Mutation]
+}
+
+type PrettyPairwise {
+  positionLine: [String]
+  refAALine: [String]
+  alignedNAsLine: [String]
+  mutationLine: [String]
+}
+
+type Root {
+  currentVersion: HivdbVersion
+  currentProgramVersion: SierraVersion
+  sequenceAnalysis(
+    sequences: [UnalignedSequenceInput]
+  ): [SequenceAnalysis]
+  mutationsAnalysis(
+    mutations: [String]
+  ): MutationsAnalysis
+  patternAnalysis(
+    patterns: [[String]]
+  ): [MutationsAnalysis]
+  genes(
+    names: [GeneEnum]
+  ): [Gene]
+  mutationPrevalenceSubtypes: [MutationPrevalenceSubtype]
+  viewer: Viewer
+}
+
+enum SIR {
+  S
+  I
+  R
+}
+
+type SequenceAnalysis {
+  inputSequence: UnalignedSequenceOutput
+  isReverseComplement: Boolean
+  availableGenes: [Gene]
+  validationResults: [ValidationResult]
+  alignedGeneSequences: [AlignedGeneSequence]
+  absoluteFirstNA: Int
+  subtypesV2(
+    first: Int = 2
+  ): [HIVBoundSubtype]
+  bestMatchingSubtype: HIVBoundSubtype
+  genotypes(
+    first: Int = 2
+  ): [HIVBoundSubtype] @deprecated(reason: "Use field `subtypesV2` instead.")
+  bestMatchingGenotype: HIVBoundSubtype @deprecated(reason: "Use field `bestMatchingSubtype` instead.")
+  mixturePcnt: Float
+  mutations(
+    filterOptions: [MutationSetFilterOption]
+    customList: [String]
+  ): [Mutation]
+  frameShifts: [FrameShift]
+  drugResistance: [DrugResistance]
+  mutationPrevalences: [BoundMutationPrevalence]
+  subtypes(
+    first: Int = 2
+  ): [BoundSubtype] @deprecated(reason: "Use field `subtypesV2` instead.")
+  subtypeText: String @deprecated(reason: "Use field `bestMatchingSubtype { display }` instead.")
+  algorithmComparison(
+    algorithms: [ASIAlgorithm]
+    customAlgorithms: [CustomASIAlgorithm]
+  ): [AlgorithmComparison]
+}
+
+type SierraVersion {
+  text: String
+  publishDate: String
+}
+
+scalar String
+
+enum Subtype {
+  A
+  A2
+  B
+  C
+  D
+  F
+  F2
+  G
+  H
+  J
+  K
+  X01
+  X02
+  X03
+  X04
+  X05
+  X06
+  X07
+  X08
+  X09
+  X10
+  X11
+  X12
+  X13
+  X14
+  X15
+  X16
+  X17
+  X18
+  X19
+  X20
+  X21
+  X22
+  X23
+  X24
+  X25
+  X26
+  X27
+  X28
+  X29
+  X30
+  X31
+  X32
+  X33
+  X34
+  X35
+  X36
+  X37
+  X38
+  X39
+  X40
+  X41
+  X42
+  X43
+  X44
+  X45
+  X46
+  X47
+  X48
+  X49
+  X50
+  X51
+  X52
+  X53
+  X54
+  X55
+  X56
+  X57
+  X58
+  X59
+  X60
+  X61
+  X62
+  X63
+  X64
+  X65
+  X66
+  X67
+  X68
+  X69
+  X70
+  X71
+  X72
+  X73
+  X74
+  X77
+  X78
+  X82
+  X83
+  X85
+  X86
+  X87
+  U
+  O
+  N
+  P
+  HIV2A
+  HIV2B
+}
+
+input UnalignedSequenceInput {
+  header: String
+  sequence: String
+}
+
+type UnalignedSequenceOutput {
+  header: String
+  sequence: String
+  MD5: String
+  SHA512: String
+}
+
+enum ValidationLevel {
+  OK
+  NOTE
+  WARNING
+  SEVERE_WARNING
+  CRITICAL
+}
+
+type ValidationResult {
+  level: ValidationLevel
+  message: String
+}
+
+type Viewer {
+  currentVersion: HivdbVersion
+  currentProgramVersion: SierraVersion
+  sequenceAnalysis(
+    sequences: [UnalignedSequenceInput]
+  ): [SequenceAnalysis]
+  mutationsAnalysis(
+    mutations: [String]
+  ): MutationsAnalysis
+  patternAnalysis(
+    patterns: [[String]]
+  ): [MutationsAnalysis]
+  genes(
+    names: [GeneEnum]
+  ): [Gene]
+  mutationPrevalenceSubtypes: [MutationPrevalenceSubtype]
+}
+

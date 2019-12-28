@@ -1,0 +1,20 @@
+{
+  "profiles": {
+    "github": {
+      "commandName": "Project",
+      "commandLineArgs": "--source https://api.github.com/graphql --auth bearer|14b9b1cddb54df1bf853d23ccc1fcaf85ca192ec --out ../../../../../samples/github.graphql"
+    },
+    "swapi": {
+      "commandName": "Project",
+      "commandLineArgs": "--source https://swapi-graphql.netlify.com/.netlify/functions/index --out ../../../../../samples/swapi.graphql"
+    },
+    "hivdb": {
+      "commandName": "Project",
+      "commandLineArgs": "--source https://hivdb.stanford.edu/graphql --out ../../../../../samples/hivdb.graphql"
+    },
+    "countries": {
+      "commandName": "Project",
+      "commandLineArgs": "--source https://countries.trevorblades.com/ --out ../../../../../samples/countries.graphql"
+    }
+  }
+}
