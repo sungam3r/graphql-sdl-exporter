@@ -1,0 +1,14 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <PackageTags>GraphQL;Introspection;SDL</PackageTags>
+    <Description>.NET Core Global Tool for generating SDL from url or executable file</Description>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="..\..\assets\logo.64x64.png" Pack="true" PackagePath=""/>
+  </ItemGroup>
+  
+</Project>
