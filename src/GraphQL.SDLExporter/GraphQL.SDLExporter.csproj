@@ -4,15 +4,13 @@
     <OutputType>Exe</OutputType>
     <TargetFrameworks>netcoreapp3.1;netcoreapp3.0;netcoreapp2.2</TargetFrameworks>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
-
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageTags>GraphQL;Introspection;SDL</PackageTags>
     <Title>.NET Core Global Tool for generating SDL from url or executable file</Title>
     <Description>$(Title)</Description>
     <PackAsTool>true</PackAsTool>
-    <Prefer32Bit>true</Prefer32Bit>
-    <AssemblyName>sdlexport</AssemblyName>
-    <ToolCommandName>$(AssemblyName)</ToolCommandName>
+    <PackageId>dotnet-sdlexport</PackageId>
+    <ToolCommandName>sdlexport</ToolCommandName>
   </PropertyGroup>
 
   <ItemGroup>
