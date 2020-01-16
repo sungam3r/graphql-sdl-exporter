@@ -36,9 +36,10 @@ namespace GraphQL.SDLExporter
             else
             {
                 Process targetService = null;
+                string processName = null;
                 try
                 {
-                    string processName = Path.GetFileNameWithoutExtension(Options.Source);
+                    processName = Path.GetFileNameWithoutExtension(Options.Source);
                     Console.WriteLine($"Starting process {processName} at {Options.ServiceUrl}");
 
                     // Currently, only ASP.NET Core apps are supported.
@@ -87,7 +88,7 @@ namespace GraphQL.SDLExporter
                         // the process has already completed
                     }
 
-                    Console.WriteLine($"The process {targetService?.ProcessName} was stopped");
+                    Console.WriteLine($"The process {processName} was stopped");
                 }
             }
 
