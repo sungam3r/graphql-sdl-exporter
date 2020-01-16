@@ -72,7 +72,7 @@ namespace GraphQL.SDLExporter
                     if (targetService.HasExited)
                         throw new ApplicationException($"Process could not start, exit code: {targetService.ExitCode}");
 
-                    Console.WriteLine($"The process was started at {Options.ServiceUrl}");
+                    Console.WriteLine($"The process {processName} was started at {Options.ServiceUrl}");
 
                     response = GetIntrospectionResponseFromUrl();
                 }
@@ -87,7 +87,7 @@ namespace GraphQL.SDLExporter
                         // the process has already completed
                     }
 
-                    Console.WriteLine("The process was stopped");
+                    Console.WriteLine($"The process {targetService?.ProcessName} was stopped");
                 }
             }
 
@@ -115,7 +115,6 @@ namespace GraphQL.SDLExporter
         private GraphQLResponse GetIntrospectionResponseFromUrl()
         {
             string serviceUrl = Options.FromURL ? Options.Source : Options.ServiceUrl + Options.GraphQLRelativePath;
-            Console.WriteLine($"Sending introspection request to {serviceUrl}");
 
             using (var client = new GraphQLHttpClient(serviceUrl, Options.Authentication))
             {
@@ -126,12 +125,15 @@ namespace GraphQL.SDLExporter
                 while (true)
                 {
                     GraphQLResponse response = null;
+                    Console.WriteLine($"Sending introspection request to {serviceUrl}");
 
                     try
                     {
                         try
                         {
                             response = client.SendQueryAsync(IntrospectionQuery.Modern).GetAwaiter().GetResult();
+                            if (response != null)
+                                Console.WriteLine($"Received modern introspection response from {serviceUrl}");
                         }
                         catch (Exception ex)
                         {
@@ -149,10 +151,10 @@ namespace GraphQL.SDLExporter
 
                             Console.WriteLine("Fallback to classic introspection request without directives");
                             response = client.SendQueryAsync(IntrospectionQuery.Classic).GetAwaiter().GetResult();
+                            if (response != null)
+                                Console.WriteLine($"Received classic introspection response from {serviceUrl}");
                         }
 
-                        if (response != null)
-                            Console.WriteLine($"Received response from {serviceUrl}");
                         return response;
                     }
                     catch (Exception e)
