@@ -46,7 +46,7 @@ namespace GraphQL.SDLExporter
                     var procStartInfo = new ProcessStartInfo
                     {
                         FileName = "dotnet",
-                        Arguments = Options.Source + " API_ONLY_RESTRICTED_ENVIRONMENT --server.urls " + Options.ServiceUrl,
+                        Arguments = $"{Options.Source} API_ONLY_RESTRICTED_ENVIRONMENT --server.urls {Options.ServiceUrl} --urls {Options.ServiceUrl}",
                         // there may be problems with services that did not configure the working directory on their own
                         WorkingDirectory = Path.GetDirectoryName(Path.GetFullPath(Options.Source)),
                         CreateNoWindow = true,
