@@ -92,7 +92,7 @@ namespace GraphQL.SDLExporter
                 }
             }
 
-            if (response == null)
+            if (response?.Data == null)
             {
                 Console.WriteLine("Failed to get introspection response");
                 return 100;
@@ -132,8 +132,8 @@ namespace GraphQL.SDLExporter
                     {
                         try
                         {
-                            response = client.SendQueryAsync(IntrospectionQuery.Modern).GetAwaiter().GetResult();
-                            if (response != null)
+                            response = client.SendQueryAsync(IntrospectionQuery.Modern, "IntrospectionQuery").GetAwaiter().GetResult();
+                            if (response?.Data != null)
                                 Console.WriteLine($"Received modern introspection response from {serviceUrl}");
                         }
                         catch (Exception ex)
@@ -141,9 +141,9 @@ namespace GraphQL.SDLExporter
                             Console.WriteLine($"Failed to send modern introspection request with directives: {ex.Message}");
                         }
 
-                        if (response == null || response.Errors?.Any() == true)
+                        if (response?.Data == null || response.Errors?.Any() == true)
                         {
-                            if (response != null)
+                            if (response.Errors?.Any() == true)
                             {
                                 Console.WriteLine("Modern introspection request with directives contains errors:");
                                 foreach (var error in response.Errors)
@@ -151,8 +151,8 @@ namespace GraphQL.SDLExporter
                             }
 
                             Console.WriteLine("Fallback to classic introspection request without directives");
-                            response = client.SendQueryAsync(IntrospectionQuery.Classic).GetAwaiter().GetResult();
-                            if (response != null)
+                            response = client.SendQueryAsync(IntrospectionQuery.Classic, "IntrospectionQuery").GetAwaiter().GetResult();
+                            if (response?.Data != null)
                                 Console.WriteLine($"Received classic introspection response from {serviceUrl}");
                         }
 
