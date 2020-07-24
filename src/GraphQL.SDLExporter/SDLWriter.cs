@@ -20,12 +20,12 @@ namespace GraphQL.SDLExporter
 
             Options.GeneratedFileName = Options.GeneratedFileName ?? (Options.FromURL ? "service" : Options.Source) + ".graphql";
 
-            Console.WriteLine("Start exporting SDL");
+            ColoredConsole.WriteInfo($"Start exporting SDL from {Options.Source}");
 
             var outDirectory = new FileInfo(Options.GeneratedFileName).Directory;
             outDirectory.Create(); // if there is no necessary subfolder, then this creates it
 
-            Console.WriteLine($"Output directory: {outDirectory.FullName}");
+            ColoredConsole.WriteInfo($"Output directory: {outDirectory.FullName}");
 
             GraphQLResponse response = null;
 
@@ -40,7 +40,7 @@ namespace GraphQL.SDLExporter
                 try
                 {
                     processName = Path.GetFileNameWithoutExtension(Options.Source);
-                    Console.WriteLine($"Starting process {processName} at {Options.ServiceUrl}");
+                    ColoredConsole.WriteInfo($"Starting process {processName} at {Options.ServiceUrl}");
 
                     // Currently, only ASP.NET Core apps are supported.
                     var procStartInfo = new ProcessStartInfo
@@ -59,12 +59,12 @@ namespace GraphQL.SDLExporter
                     targetService.OutputDataReceived += (o, e) =>
                     {
                         if (e.Data != null)
-                            Console.WriteLine($"[{processName}] {e.Data}");
+                            ColoredConsole.WriteInfo($"[{processName}] {e.Data}");
                     };
                     targetService.ErrorDataReceived += (o, e) =>
                     {
                         if (e.Data != null)
-                            Console.WriteLine($"[{processName}] ERROR {e.Data}");
+                            ColoredConsole.WriteInfo($"[{processName}] ERROR {e.Data}");
                     };
 
                     targetService.BeginOutputReadLine();
@@ -73,7 +73,7 @@ namespace GraphQL.SDLExporter
                     if (targetService.HasExited)
                         throw new ApplicationException($"Process could not start, exit code: {targetService.ExitCode}");
 
-                    Console.WriteLine($"The process {processName} was started at {Options.ServiceUrl}");
+                    ColoredConsole.WriteInfo($"The process {processName} was started at {Options.ServiceUrl}");
 
                     response = GetIntrospectionResponseFromUrl();
                 }
@@ -88,13 +88,13 @@ namespace GraphQL.SDLExporter
                         // the process has already completed
                     }
 
-                    Console.WriteLine($"The process {processName} was stopped");
+                    ColoredConsole.WriteInfo($"The process {processName} was stopped");
                 }
             }
 
             if (response?.Data == null)
             {
-                Console.WriteLine("Failed to get introspection response");
+                ColoredConsole.WriteError("Failed to get introspection response");
                 return 100;
             }
 
@@ -102,13 +102,13 @@ namespace GraphQL.SDLExporter
 
             if (string.IsNullOrEmpty(sdl))
             {
-                Console.WriteLine("Failed to generate SDL");
+                ColoredConsole.WriteError("Failed to generate SDL");
                 return 200;
             }
 
             File.WriteAllText(Options.GeneratedFileName, sdl);
-            
-            Console.WriteLine($"SDL was successfully written to {Options.GeneratedFileName}, generation completed in {DateTime.Now - Program.Start:hh\\:mm\\:ss\\.ff} sec.");
+
+            ColoredConsole.WriteInfo($"SDL was successfully written to {Options.GeneratedFileName}, generation completed in {DateTime.Now - Program.Start:hh\\:mm\\:ss\\.ff} sec.");
 
             return 0;
         }
@@ -126,7 +126,7 @@ namespace GraphQL.SDLExporter
                 while (true)
                 {
                     GraphQLResponse response = null;
-                    Console.WriteLine($"Sending introspection request to {serviceUrl}");
+                    ColoredConsole.WriteInfo($"Sending introspection request to {serviceUrl}");
 
                     try
                     {
@@ -134,47 +134,47 @@ namespace GraphQL.SDLExporter
                         {
                             response = client.SendQueryAsync(IntrospectionQuery.Modern, "IntrospectionQuery").GetAwaiter().GetResult();
                             if (response?.Data != null)
-                                Console.WriteLine($"Received modern introspection response from {serviceUrl}");
+                                ColoredConsole.WriteInfo($"Received modern introspection response from {serviceUrl}");
                         }
                         catch (Exception ex)
                         {
-                            Console.WriteLine($"Failed to send modern introspection request with directives: {ex.Message}");
+                            ColoredConsole.WriteError($"Failed to send modern introspection request with directives: {ex.Message}");
                         }
 
-                        if (response?.Data == null || response.Errors?.Any() == true)
+                        if (response?.Data == null || response?.Errors?.Any() == true)
                         {
-                            if (response.Errors?.Any() == true)
+                            if (response?.Errors?.Any() == true)
                             {
-                                Console.WriteLine("Modern introspection request with directives contains errors:");
+                                ColoredConsole.WriteError("Modern introspection request with directives contains errors:");
                                 foreach (var error in response.Errors)
-                                    Console.WriteLine(error.Message);
+                                    ColoredConsole.WriteError(error.Message);
                             }
 
-                            Console.WriteLine("Fallback to classic introspection request without directives");
+                            ColoredConsole.WriteInfo("Fallback to classic introspection request without directives");
                             response = client.SendQueryAsync(IntrospectionQuery.Classic, "IntrospectionQuery").GetAwaiter().GetResult();
                             if (response?.Data != null)
-                                Console.WriteLine($"Received classic introspection response from {serviceUrl}");
+                                ColoredConsole.WriteInfo($"Received classic introspection response from {serviceUrl}");
                         }
 
                         return response;
                     }
                     catch (Exception e)
                     {
-                        Console.WriteLine($"An error occurred while executing an HTTP request ({retry}): {e.Message}");
+                        ColoredConsole.WriteError($"An error occurred while executing an HTTP request ({retry}): {e.Message}");
 
                         if (Options.FromURL)
                             return null;
 
-                        Console.WriteLine($"Make sure that it is possible to start the process at {serviceUrl} and the required port is not used by another process. Perhaps the process has not yet started and cannot serve the request.");
+                        ColoredConsole.WriteError($"Make sure that it is possible to start the process at {serviceUrl} and the required port is not used by another process. Perhaps the process has not yet started and cannot serve the request.");
 
                         if (retry == MAX_RETRY)
                         {
-                            Console.WriteLine($"Failed to load data from {serviceUrl} for {MAX_RETRY} attempts");
+                            ColoredConsole.WriteError($"Failed to load data from {serviceUrl} for {MAX_RETRY} attempts");
                             return null; // that's enough
                         }
 
                         ++retry;
-                        Console.WriteLine($"Wait 2 seconds and try {retry} from {MAX_RETRY}.");
+                        ColoredConsole.WriteWarning($"Wait 2 seconds and try {retry} from {MAX_RETRY}.");
                         Thread.Sleep(2000);
                     }
                 }
@@ -185,9 +185,9 @@ namespace GraphQL.SDLExporter
         {
             if (response.Errors?.Any() == true)
             {
-                Console.WriteLine("Introspection response contains errors:");
+                ColoredConsole.WriteError("Introspection response contains errors:");
                 foreach (var error in response.Errors)
-                    Console.WriteLine(error.Message);
+                    ColoredConsole.WriteError(error.Message);
 
                 return null;
             }
@@ -197,9 +197,9 @@ namespace GraphQL.SDLExporter
 
             if (Options.Verbose)
             {
-                Console.WriteLine($"Introspection response contains {schema.Types?.Count() ?? 0} types and {schema.Directives?.Count ?? 0} directives:");
-                Console.WriteLine(data.ToString(Newtonsoft.Json.Formatting.Indented));
-                Console.WriteLine("Starting transformation from introspection response (json) to SDL.");
+                ColoredConsole.WriteInfo($"Introspection response contains {schema.Types?.Count() ?? 0} types and {schema.Directives?.Count ?? 0} directives:");
+                ColoredConsole.WriteInfo(data.ToString(Newtonsoft.Json.Formatting.Indented));
+                ColoredConsole.WriteInfo("Starting transformation from introspection response (json) to SDL.");
             }
 
             string sdl = SDLBuilder.Build(schema, new SDLBuilderOptions
@@ -212,8 +212,8 @@ namespace GraphQL.SDLExporter
 
             if (Options.Verbose)
             {
-                Console.WriteLine("SDL generated successfully:");
-                Console.WriteLine(sdl);
+                ColoredConsole.WriteInfo("SDL generated successfully:");
+                ColoredConsole.WriteInfo(sdl);
             }
 
             return sdl;

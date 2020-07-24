@@ -37,16 +37,16 @@ namespace GraphQL.SDLExporter
 			{
 				using (var postResponse = await _client.PostAsync(_endPoint, httpContent))
 				{
-					Console.WriteLine($"POST request to {_endPoint}: {postResponse.StatusCode}");
+					ColoredConsole.WriteInfo($"POST request to {_endPoint} returned {(int)postResponse.StatusCode} ({postResponse.StatusCode})");
 
 					if (postResponse.StatusCode == System.Net.HttpStatusCode.MethodNotAllowed)
 					{
-						Console.WriteLine("Switching to GET method");
+						ColoredConsole.WriteInfo("Switching to GET method");
 
 						// execute GET if POST not allowed
 						using (var getResponse = await _client.GetAsync($"{_endPoint}?query={query}"))
 						{
-							Console.WriteLine($"GET request to {_endPoint}: {getResponse.StatusCode}");
+							ColoredConsole.WriteInfo($"GET request to {_endPoint} returned {(int)postResponse.StatusCode} ({getResponse.StatusCode})");
 
 							return await ReadHttpResponseMessageAsync(getResponse);
 						}
@@ -65,7 +65,7 @@ namespace GraphQL.SDLExporter
 			var content = await httpResponseMessage.Content.ReadAsStringAsync();
 
 			if (!httpResponseMessage.IsSuccessStatusCode)
-				Console.WriteLine($"[{httpResponseMessage.StatusCode}]: {content}");
+				ColoredConsole.WriteWarning($"Server returned HTTP response code {(int)httpResponseMessage.StatusCode} ({httpResponseMessage.StatusCode}){(string.IsNullOrEmpty(content) ? " with empty body" : ": " + content)}");
 
 			return JsonConvert.DeserializeObject<GraphQLResponse>(content, new JsonSerializerSettings { ContractResolver = new CamelCasePropertyNamesContractResolver() });
 		}
