@@ -75,13 +75,13 @@ namespace GraphQL.SDLExporter
             {
                 if (!File.Exists(Source))
                 {
-                    Console.WriteLine($"Unknown source: {Source}. Only http:// and https:// protocols are supported. You can also specify the full path to the executable file.");
+                    ColoredConsole.WriteError($"Unknown source: {Source}. Only http:// and https:// protocols are supported. You can also specify the full path to the executable file.");
                     return 1;
                 }
 
                 if (string.IsNullOrEmpty(ServiceUrl))
                 {
-                    Console.WriteLine("--url parameter not set");
+                    ColoredConsole.WriteError("--url parameter not set");
                     return 2;
                 }
             }
@@ -91,7 +91,7 @@ namespace GraphQL.SDLExporter
                 string[] parts = Authentication.Split('|');
                 if (parts.Length != 2 || string.IsNullOrEmpty(parts[0]) || string.IsNullOrEmpty(parts[1]))
                 {
-                    Console.WriteLine("The value of the --auth option must be specified in the schema|parameter format.");
+                    ColoredConsole.WriteError("The value of the --auth option must be specified in the schema|parameter format.");
                     return 3;
                 }
             }
