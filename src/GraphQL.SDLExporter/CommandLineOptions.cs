@@ -24,6 +24,10 @@ namespace GraphQL.SDLExporter
         [Option("url", Required = false, Default = "http://localhost:8088", HelpText = "URL to start process")]
         public string ServiceUrl { get; set; }
 
+        /// <summary> Gets or sets additional command line arguments in case of using the executable file. </summary>
+        [Option("args", Required = false, HelpText = "Additional command line arguments in case of using the executable file")]
+        public string AdditionalCommandLineArgs { get; set; }
+
         /// <summary> Gets or sets the relative path for the GraphQL API when using the --url option. </summary>
         [Option("api-path", Required = false, Default = "/graphql", HelpText = "Relative path for GraphQL API when using --url option")]
         public string GraphQLRelativePath { get; set; }
