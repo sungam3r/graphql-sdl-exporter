@@ -40,13 +40,15 @@ namespace GraphQL.SDLExporter
                 try
                 {
                     processName = Path.GetFileNameWithoutExtension(Options.Source);
-                    ColoredConsole.WriteInfo($"Starting process {processName} at {Options.ServiceUrl}");
+
+                    var args = $"{Options.Source} API_ONLY_RESTRICTED_ENVIRONMENT --server.urls {Options.ServiceUrl} --urls {Options.ServiceUrl} {Options.AdditionalCommandLineArgs}";
+                    ColoredConsole.WriteInfo($"Executing command: dotnet {args}");
 
                     // Currently, only ASP.NET Core apps are supported.
                     var procStartInfo = new ProcessStartInfo
                     {
                         FileName = "dotnet",
-                        Arguments = $"{Options.Source} API_ONLY_RESTRICTED_ENVIRONMENT --server.urls {Options.ServiceUrl} --urls {Options.ServiceUrl} {Options.AdditionalCommandLineArgs}",
+                        Arguments = args,
                         // there may be problems with services that did not configure the working directory on their own
                         WorkingDirectory = Path.GetDirectoryName(Path.GetFullPath(Options.Source)),
                         CreateNoWindow = true,
