@@ -1,19 +1,25 @@
 <Project>
 
   <PropertyGroup>
-    <VersionPrefix>0.0.10</VersionPrefix>
+    <VersionPrefix>0.0.11-preview</VersionPrefix>
     <LangVersion>latest</LangVersion>
     <GenerateAssemblyInfo>true</GenerateAssemblyInfo>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-    <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\$(MSBuildProjectName).xml</DocumentationFile>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <CurrentYear>$([System.DateTime]::Now.ToString(yyyy))</CurrentYear>
     <Authors>Maximov Ivan</Authors>
     <Copyright>Copyright © $(Authors) 2019-$(CurrentYear)</Copyright>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageIcon>logo.64x64.png</PackageIcon>
-    <RepositoryUrl>https://github.com/sungam3r/graphql-sdl-exporter</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
+    <DebugType>embedded</DebugType>
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <EmbedUntrackedSources>true</EmbedUntrackedSources>
   </PropertyGroup>
-  
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" Condition="'$(IsPackable)' == 'true'"/>
+  </ItemGroup>
+
 </Project>

@@ -1,4 +1,4 @@
-﻿using GraphQL.IntrospectionModel;
+using GraphQL.IntrospectionModel;
 using GraphQL.IntrospectionModel.SDL;
 using System;
 using System.Diagnostics;
@@ -8,13 +8,23 @@ using System.Threading;
 
 namespace GraphQL.SDLExporter
 {
-    internal sealed class SDLWriter
+    /// <summary>
+    /// Writes SDL to destination.
+    /// </summary>
+    public sealed class SDLWriter
     {
+        /// <summary>
+        /// Options used.
+        /// </summary>
         public CommandLineOptions Options { get; set; }
 
-        internal int Execute()
+        /// <summary>
+        /// Writes SDL to destination.
+        /// </summary>
+        /// <returns> Exit code. 0 for success, otherwise one of the error codes. </returns>
+        public int Execute()
         {
-            var validated = Options.Validate();
+            int validated = Options.Validate();
             if (validated != 0)
                 return validated;
 
@@ -23,7 +33,7 @@ namespace GraphQL.SDLExporter
             ColoredConsole.WriteInfo($"Start exporting SDL from {Options.Source}");
 
             var outDirectory = new FileInfo(Options.GeneratedFileName).Directory;
-            outDirectory.Create(); // if there is no necessary subfolder, then this creates it
+            outDirectory.Create(); // if there is no necessary subdirectory, then this creates it
 
             ColoredConsole.WriteInfo($"Output directory: {outDirectory.FullName}");
 
@@ -41,7 +51,7 @@ namespace GraphQL.SDLExporter
                 {
                     processName = Path.GetFileNameWithoutExtension(Options.Source);
 
-                    var args = $"{Options.Source} API_ONLY_RESTRICTED_ENVIRONMENT --server.urls {Options.ServiceUrl} --urls {Options.ServiceUrl} {Options.AdditionalCommandLineArgs}";
+                    string args = $"{Options.Source} API_ONLY_RESTRICTED_ENVIRONMENT --server.urls {Options.ServiceUrl} --urls {Options.ServiceUrl} {Options.AdditionalCommandLineArgs}";
                     ColoredConsole.WriteInfo($"Executing command: dotnet {args}");
 
                     // Currently, only ASP.NET Core apps are supported.

@@ -1,0 +1,11 @@
+"tests":
+  - src/GraphQL.SDLExporter.Tests/**/*
+
+"CI":
+  - .github/workflows/**/*
+
+"code style":
+  - .editorconfig
+
+"documentation":
+  - README.md

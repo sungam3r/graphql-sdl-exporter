@@ -1,4 +1,4 @@
-﻿using Newtonsoft.Json;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using System;
 using System.Net.Http;
@@ -62,7 +62,7 @@ namespace GraphQL.SDLExporter
 			if (httpResponseMessage.StatusCode == System.Net.HttpStatusCode.NotFound)
 				return null;
 
-			var content = await httpResponseMessage.Content.ReadAsStringAsync();
+            string content = await httpResponseMessage.Content.ReadAsStringAsync();
 
 			if (!httpResponseMessage.IsSuccessStatusCode)
 				ColoredConsole.WriteWarning($"Server returned HTTP response code {(int)httpResponseMessage.StatusCode} ({httpResponseMessage.StatusCode}){(string.IsNullOrEmpty(content) ? " with empty body" : ": " + content)}");
