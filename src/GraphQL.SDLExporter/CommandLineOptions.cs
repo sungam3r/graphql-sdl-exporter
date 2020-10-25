@@ -1,4 +1,4 @@
-﻿using CommandLine;
+using CommandLine;
 using CommandLine.Text;
 using System;
 using System.Collections.Generic;
@@ -7,7 +7,7 @@ using System.IO;
 namespace GraphQL.SDLExporter
 {
     /// <summary> Command line options for 'sdlexport' tool. </summary>
-    internal sealed class CommandLineOptions
+    public sealed class CommandLineOptions
     {
         /// <summary> Gets or sets a value indicating that detailed log output is required. </summary>
         [Option("verbose", Required = false, HelpText = "Enables verbose log output")]
@@ -48,6 +48,9 @@ namespace GraphQL.SDLExporter
         [Option("include-descriptions", Required = false, HelpText = "Include descriptions as comments in output file")]
         public bool IncludeDescriptions { get; set; }
 
+        /// <summary>
+        /// Examples.
+        /// </summary>
         [Usage]
         public static IEnumerable<Example> Examples
         {

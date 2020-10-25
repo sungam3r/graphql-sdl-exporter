@@ -415,4 +415,3 @@ type VehiclesEdge {
   node: Vehicle
   cursor: String!
 }
-
