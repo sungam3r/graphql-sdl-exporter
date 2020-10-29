@@ -11,8 +11,8 @@
 
 ![Size](https://img.shields.io/github/repo-size/sungam3r/graphql-sdl-exporter)
 
-[![Build status](https://github.com/sungam3r/graphql-sdl-exporter/workflows/Publish%20preview%20to%20GitHub%20registry/badge.svg)](https://github.com/sungam3r/graphql-sdl-exporter/actions?query=workflow%3A%22Publish+preview+to+GitHub+registry%22)
-[![Build status](https://github.com/sungam3r/graphql-sdl-exporter/workflows/Publish%20release%20to%20Nuget%20registry/badge.svg)](https://github.com/sungam3r/graphql-sdl-exporter/actions?query=workflow%3A%22Publish+release+to+Nuget+registry%22)
+[![Build status](https://github.com/sungam3r/graphql-sdl-exporter/workflows/Publish%20preview%20to%20GitHub%20registry/badge.svg)](https://github.com/sungam3r/graphql-sdl-exporter/actions)
+[![Build status](https://github.com/sungam3r/graphql-sdl-exporter/workflows/Publish%20release%20to%20Nuget%20registry/badge.svg)](https://github.com/sungam3r/graphql-sdl-exporter/actions)
 
 .NET Core Global Tool for generating SDL from url or executable file.
 
