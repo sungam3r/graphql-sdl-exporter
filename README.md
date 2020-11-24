@@ -1,5 +1,7 @@
 # graphql-sdl-exporter
 
+<a href="https://www.buymeacoffee.com/sungam3r" target="_blank"><img src="https://bmc-cdn.nyc3.digitaloceanspaces.com/BMC-button-images/custom_images/orange_img.png" alt="Buy Me A Coffee" style="height: auto !important;width: auto !important;" ></a>
+
 ![License](https://img.shields.io/github/license/sungam3r/graphql-sdl-exporter)
 
 [![NuGet](https://img.shields.io/nuget/v/dotnet-sdlexport)](https://www.nuget.org/packages/dotnet-sdlexport)
