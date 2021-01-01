@@ -40,6 +40,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ISSUE_TEMPLATE", "ISSUE_TEM
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "workflows", "workflows", "{E5924CF4-35C5-45F1-AE13-D48A8B24A569}"
 	ProjectSection(SolutionItems) = preProject
+		..\.github\workflows\codeql-analysis.yml = ..\.github\workflows\codeql-analysis.yml
 		..\.github\workflows\label.yml = ..\.github\workflows\label.yml
 		..\.github\workflows\publish-preview.yml = ..\.github\workflows\publish-preview.yml
 		..\.github\workflows\publish-release.yml = ..\.github\workflows\publish-release.yml
