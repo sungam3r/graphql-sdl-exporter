@@ -1,5 +1,5 @@
-﻿using CommandLine;
 using System;
+using CommandLine;
 
 namespace GraphQL.SDLExporter
 {

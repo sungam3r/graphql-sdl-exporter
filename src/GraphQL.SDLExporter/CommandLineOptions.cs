@@ -1,8 +1,8 @@
-using CommandLine;
-using CommandLine.Text;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using CommandLine;
+using CommandLine.Text;
 
 namespace GraphQL.SDLExporter
 {
