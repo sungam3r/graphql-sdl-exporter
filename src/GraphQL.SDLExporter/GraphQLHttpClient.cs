@@ -1,4 +1,5 @@
 using System;
+using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Reflection;
@@ -38,8 +39,9 @@ namespace GraphQL.SDLExporter
                 using (var postResponse = await _client.PostAsync(_endPoint, httpContent))
                 {
                     ColoredConsole.WriteInfo($"POST request to {_endPoint} returned {(int)postResponse.StatusCode} ({postResponse.StatusCode})");
+                    PrintHeaders(postResponse);
 
-                    if (postResponse.StatusCode == System.Net.HttpStatusCode.MethodNotAllowed)
+                    if (postResponse.StatusCode == HttpStatusCode.MethodNotAllowed)
                     {
                         ColoredConsole.WriteInfo("Switching to GET method");
 
@@ -47,6 +49,7 @@ namespace GraphQL.SDLExporter
                         using (var getResponse = await _client.GetAsync($"{_endPoint}?query={query}"))
                         {
                             ColoredConsole.WriteInfo($"GET request to {_endPoint} returned {(int)postResponse.StatusCode} ({getResponse.StatusCode})");
+                            PrintHeaders(getResponse);
 
                             return await ReadHttpResponseMessageAsync(getResponse);
                         }
@@ -57,17 +60,21 @@ namespace GraphQL.SDLExporter
             }
         }
 
-        public async Task<GraphQLResponse> ReadHttpResponseMessageAsync(HttpResponseMessage httpResponseMessage)
+        private async Task<GraphQLResponse> ReadHttpResponseMessageAsync(HttpResponseMessage httpResponseMessage)
         {
-            if (httpResponseMessage.StatusCode == System.Net.HttpStatusCode.NotFound)
-                return null;
-
             string content = await httpResponseMessage.Content.ReadAsStringAsync();
 
             if (!httpResponseMessage.IsSuccessStatusCode)
                 ColoredConsole.WriteWarning($"Server returned HTTP response code {(int)httpResponseMessage.StatusCode} ({httpResponseMessage.StatusCode}){(string.IsNullOrEmpty(content) ? " with empty body" : ": " + content)}");
 
             return JsonConvert.DeserializeObject<GraphQLResponse>(content, new JsonSerializerSettings { ContractResolver = new CamelCasePropertyNamesContractResolver() });
+        }
+
+        private void PrintHeaders(HttpResponseMessage response)
+        {
+            ColoredConsole.WriteInfo("Response headers:");
+            foreach (var header in response.Headers)
+                ColoredConsole.WriteInfo($"\t{header.Key}: {string.Join(";", header.Value)}");
         }
     }
 }
