@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 
 namespace GraphQL.SDLExporter
 {
@@ -10,19 +11,19 @@ namespace GraphQL.SDLExporter
 
         public static ConsoleColor WarningColor { get; set; } = ConsoleColor.Yellow;
 
-        public static void WriteError(string text = null) => Write(text, ErrorColor);
+        public static void WriteError(string text = null) => Write(text, ErrorColor, Console.Error);
 
-        public static void WriteInfo(string text = null) => Write(text, InfoColor);
+        public static void WriteInfo(string text = null) => Write(text, InfoColor, Console.Out);
 
-        public static void WriteWarning(string text = null) => Write(text, WarningColor);
+        public static void WriteWarning(string text = null) => Write(text, WarningColor, Console.Error);
 
-        private static void Write(string text, ConsoleColor color)
+        private static void Write(string text, ConsoleColor color, TextWriter to)
         {
             var old = Console.ForegroundColor;
             try
             {
                 Console.ForegroundColor = color;
-                Console.WriteLine(text);
+                to.WriteLine(text);
             }
             finally
             {

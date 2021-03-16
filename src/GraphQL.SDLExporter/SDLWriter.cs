@@ -2,6 +2,7 @@ using System;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Threading;
 using GraphQL.IntrospectionModel;
 using GraphQL.IntrospectionModel.SDL;
@@ -68,6 +69,7 @@ namespace GraphQL.SDLExporter
                     };
 
                     targetService = Process.Start(procStartInfo);
+                    targetService.Exited += (o, e) => ColoredConsole.WriteInfo($"The process {processName} exited with code {targetService.ExitCode}");
                     targetService.OutputDataReceived += (o, e) =>
                     {
                         if (e.Data != null)
@@ -106,7 +108,7 @@ namespace GraphQL.SDLExporter
 
             if (response?.Data == null)
             {
-                ColoredConsole.WriteError("Failed to get introspection response");
+                ColoredConsole.WriteError("Failed to get introspection response for both modern and classic introspection query.");
                 return 100;
             }
 
@@ -134,11 +136,12 @@ namespace GraphQL.SDLExporter
                 // There should be enough time to start. If necessary, this can be moved to the options.
                 int retry = 1;
                 const int MAX_RETRY = 10;
+                ColoredConsole.WriteInfo($"Starting to poll {serviceUrl} with max {MAX_RETRY} attempts.");
 
                 while (true)
                 {
                     GraphQLResponse response = null;
-                    ColoredConsole.WriteInfo($"Sending introspection request to {serviceUrl}");
+                    ColoredConsole.WriteInfo($"Sending introspection request #{retry} to {serviceUrl}");
 
                     try
                     {
@@ -186,7 +189,7 @@ namespace GraphQL.SDLExporter
                         }
 
                         ++retry;
-                        ColoredConsole.WriteWarning($"Wait 2 seconds and try {retry} from {MAX_RETRY}.");
+                        ColoredConsole.WriteWarning($"Wait 2 seconds and try again ({retry} of {MAX_RETRY}).");
                         Thread.Sleep(2000);
                     }
                 }
