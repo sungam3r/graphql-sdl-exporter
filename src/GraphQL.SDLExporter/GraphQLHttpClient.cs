@@ -74,7 +74,7 @@ namespace GraphQL.SDLExporter
         {
             ColoredConsole.WriteInfo("Response headers:");
             foreach (var header in response.Headers)
-                ColoredConsole.WriteInfo($"\t{header.Key}: {string.Join(";", header.Value)}");
+                ColoredConsole.WriteInfo($"  {header.Key}: {string.Join(";", header.Value)}");
         }
     }
 }

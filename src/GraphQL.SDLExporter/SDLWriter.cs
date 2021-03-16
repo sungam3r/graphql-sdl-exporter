@@ -189,7 +189,7 @@ namespace GraphQL.SDLExporter
                         }
 
                         ++retry;
-                        ColoredConsole.WriteWarning($"Wait 2 seconds and try again ({retry} of {MAX_RETRY}).");
+                        ColoredConsole.WriteInfo($"Waiting 2 seconds and try again ({retry} of {MAX_RETRY}).");
                         Thread.Sleep(2000);
                     }
                 }
