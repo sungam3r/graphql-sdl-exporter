@@ -1,6 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Net.Http;
+using System.Net.Http.Headers;
+using System.Reflection;
 using CommandLine;
 using CommandLine.Text;
 
@@ -9,6 +12,30 @@ namespace GraphQL.SDLExporter
     /// <summary> Command line options for 'sdlexport' tool. </summary>
     public sealed class CommandLineOptions
     {
+        /// <summary>
+        /// A delegate to modify introspection query sent by client to the GraphQL server.
+        /// </summary>
+        public Func<string, string> ConfigureIntrospectionQuery { get; set; } = query => query;
+
+        /// <summary>
+        /// A factory to create <see cref="HttpClient"/> used to send an introspection query.
+        /// </summary>
+        public Func<CommandLineOptions, HttpClient> HttpClientFactory { get; set; } = options =>
+        {
+            var client = new HttpClient(new HttpClientHandler { AllowAutoRedirect = true });
+            // UserAgent is always filled, some APIs require it to be specified (https://developer.github.com/v3/#user-agent-required)
+            var asmName = Assembly.GetExecutingAssembly().GetName();
+            client.DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue(asmName.Name, asmName.Version.ToString()));
+
+            if (!string.IsNullOrEmpty(options.Authentication))
+            {
+                string[] parts = options.Authentication.Split('|');
+                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(parts[0], parts[1]);
+            }
+
+            return client;
+        };
+
         /// <summary> Gets or sets a value indicating that detailed log output is required. </summary>
         [Option("verbose", Required = false, HelpText = "Enables verbose log output")]
         public bool Verbose { get; set; }

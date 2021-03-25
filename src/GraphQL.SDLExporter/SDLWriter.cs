@@ -2,7 +2,6 @@ using System;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Net;
 using System.Threading;
 using GraphQL.IntrospectionModel;
 using GraphQL.IntrospectionModel.SDL;
@@ -131,7 +130,7 @@ namespace GraphQL.SDLExporter
         {
             string serviceUrl = Options.FromURL ? Options.Source : Options.ServiceUrl + Options.GraphQLRelativePath;
 
-            using (var client = new GraphQLHttpClient(serviceUrl, Options.Authentication))
+            using (var client = new GraphQLHttpClient(Options.HttpClientFactory(Options)))
             {
                 // There should be enough time to start. If necessary, this can be moved to the options.
                 int retry = 1;
@@ -147,7 +146,7 @@ namespace GraphQL.SDLExporter
                     {
                         try
                         {
-                            response = client.SendQueryAsync(IntrospectionQuery.Modern, "IntrospectionQuery").GetAwaiter().GetResult();
+                            response = client.SendQueryAsync(serviceUrl, Options.ConfigureIntrospectionQuery(IntrospectionQuery.Modern), "IntrospectionQuery").GetAwaiter().GetResult();
                             if (response?.Data != null)
                                 ColoredConsole.WriteInfo($"Received modern introspection response from {serviceUrl}");
                         }
@@ -166,7 +165,7 @@ namespace GraphQL.SDLExporter
                             }
 
                             ColoredConsole.WriteInfo("Fallback to classic introspection request without directives");
-                            response = client.SendQueryAsync(IntrospectionQuery.Classic, "IntrospectionQuery").GetAwaiter().GetResult();
+                            response = client.SendQueryAsync(serviceUrl, Options.ConfigureIntrospectionQuery(IntrospectionQuery.Classic), "IntrospectionQuery").GetAwaiter().GetResult();
                             if (response?.Data != null)
                                 ColoredConsole.WriteInfo($"Received classic introspection response from {serviceUrl}");
                         }

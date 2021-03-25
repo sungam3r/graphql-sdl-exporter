@@ -22,6 +22,8 @@ namespace GraphQL.SDLExporter.Tests
                     Source = "https://swapi-graphql.netlify.com/.netlify/functions/index",
                     IncludeDescriptions = true,
                     GeneratedFileName = "swapi-generated.graphql",
+                    // swapi-graphql.netlify.com does not support __Schema.description field!
+                    ConfigureIntrospectionQuery = query => query.Replace("__schema {\n      description", "__schema {"),
                 }
             };
 
