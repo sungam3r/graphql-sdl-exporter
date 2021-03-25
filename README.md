@@ -9,7 +9,7 @@
 [![Publish release to Nuget registry](https://github.com/sungam3r/graphql-sdl-exporter/actions/workflows/publish-release.yml/badge.svg)](https://github.com/sungam3r/graphql-sdl-exporter/actions/workflows/publish-release.yml)
 [![CodeQL analysis](https://github.com/sungam3r/graphql-sdl-exporter/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/sungam3r/graphql-sdl-exporter/actions/workflows/codeql-analysis.yml)
 
---
+[![codecov](https://codecov.io/gh/sungam3r/graphql-sdl-exporter/branch/master/graph/badge.svg?token=UJPTEBC73U)](https://codecov.io/gh/sungam3r/graphql-sdl-exporter)
 [![Total alerts](https://img.shields.io/lgtm/alerts/g/sungam3r/graphql-sdl-exporter.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/sungam3r/graphql-sdl-exporter/alerts/)
 [![Language grade: C#](https://img.shields.io/lgtm/grade/csharp/g/sungam3r/graphql-sdl-exporter.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/sungam3r/graphql-sdl-exporter/context:csharp)
 
