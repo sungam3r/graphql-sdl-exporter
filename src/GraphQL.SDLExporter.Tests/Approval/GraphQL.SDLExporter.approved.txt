@@ -13,6 +13,7 @@ namespace GraphQL.SDLExporter
         public string GeneratedFileName { get; set; }
         [CommandLine.Option("api-path", Default="/graphql", HelpText="Relative path for GraphQL API when using --url option", Required=false)]
         public string GraphQLRelativePath { get; set; }
+        public System.Func<GraphQL.SDLExporter.CommandLineOptions, System.Net.Http.HttpClient> HttpClientFactory { get; set; }
         [CommandLine.Option("include-descriptions", HelpText="Include descriptions as comments in output file", Required=false)]
         public bool IncludeDescriptions { get; set; }
         [CommandLine.Option("url", Default="http://localhost:8088", HelpText="URL to start process", Required=false)]
