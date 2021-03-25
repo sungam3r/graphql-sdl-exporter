@@ -9,6 +9,11 @@ namespace GraphQL.SDLExporter
     /// <summary> Command line options for 'sdlexport' tool. </summary>
     public sealed class CommandLineOptions
     {
+        /// <summary>
+        /// A delegate to modify introspection query sent by client to the GraphQL server.
+        /// </summary>
+        public Func<string, string> ConfigureIntrospectionQuery { get; set; } = query => query;
+
         /// <summary> Gets or sets a value indicating that detailed log output is required. </summary>
         [Option("verbose", Required = false, HelpText = "Enables verbose log output")]
         public bool Verbose { get; set; }

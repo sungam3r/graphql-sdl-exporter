@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <TargetFrameworks>netcoreapp3.1;net5</TargetFrameworks>
     <PackageTags>GraphQL;Introspection;SDL</PackageTags>
     <Title>.NET Core Global Tool for generating SDL from url or executable file</Title>
     <Description>$(Title)</Description>
@@ -13,12 +13,8 @@
 
   <ItemGroup>
     <PackageReference Include="CommandLineParser" Version="2.8.0" />
-    <PackageReference Include="GraphQL.IntrospectionModel" Version="0.0.9" />
-    <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Include="..\..\assets\logo.64x64.png" Pack="true" PackagePath="" />
+    <PackageReference Include="GraphQL.IntrospectionModel" Version="0.0.10" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
   </ItemGroup>
 
 </Project>

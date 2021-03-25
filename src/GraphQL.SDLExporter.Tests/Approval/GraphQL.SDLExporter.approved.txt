@@ -7,6 +7,7 @@ namespace GraphQL.SDLExporter
         public string AdditionalCommandLineArgs { get; set; }
         [CommandLine.Option("auth", HelpText="Authentication method in schema|parameter format", Required=false)]
         public string Authentication { get; set; }
+        public System.Func<string, string> ConfigureIntrospectionQuery { get; set; }
         [CommandLine.Option("out", HelpText="The output SDL file. If not specified, then the schema will be saved as <Source>." +
             "graphql", Required=false)]
         public string GeneratedFileName { get; set; }
