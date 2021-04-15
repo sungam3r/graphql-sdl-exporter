@@ -211,7 +211,7 @@ namespace GraphQL.SDLExporter
 
             if (Options.Verbose)
             {
-                ColoredConsole.WriteInfo($"Introspection response contains {schema.Types?.Count() ?? 0} types and {schema.Directives?.Count ?? 0} directives:");
+                ColoredConsole.WriteInfo($"Introspection response contains {schema.Types?.Count ?? 0} types and {schema.Directives?.Count ?? 0} directives:");
                 ColoredConsole.WriteInfo(data.ToString(Newtonsoft.Json.Formatting.Indented));
                 ColoredConsole.WriteInfo("Starting transformation from introspection response (json) to SDL.");
             }
