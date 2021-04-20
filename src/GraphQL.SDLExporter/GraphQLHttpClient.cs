@@ -47,7 +47,7 @@ namespace GraphQL.SDLExporter
             }
         }
 
-        private async Task<GraphQLResponse> ReadHttpResponseMessageAsync(HttpResponseMessage httpResponseMessage)
+        private static async Task<GraphQLResponse> ReadHttpResponseMessageAsync(HttpResponseMessage httpResponseMessage)
         {
             string content = await httpResponseMessage.Content.ReadAsStringAsync();
 
@@ -57,7 +57,7 @@ namespace GraphQL.SDLExporter
             return JsonConvert.DeserializeObject<GraphQLResponse>(content, new JsonSerializerSettings { ContractResolver = new CamelCasePropertyNamesContractResolver() });
         }
 
-        private void PrintHeaders(HttpResponseMessage response)
+        private static void PrintHeaders(HttpResponseMessage response)
         {
             ColoredConsole.WriteInfo("Response headers:");
             foreach (var header in response.Headers)
