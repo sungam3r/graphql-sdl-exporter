@@ -6,11 +6,11 @@
     },
     "swapi": {
       "commandName": "Project",
-      "commandLineArgs": "--source https://swapi-graphql.netlify.com/.netlify/functions/index --out ../../../../../samples/swapi.graphql"
+      "commandLineArgs": "--verbose --source http://swapi-graphql.netlify.com/.netlify/functions/index?refid=abc --out ../../../../../samples/swapi.graphql"
     },
     "hivdb": {
       "commandName": "Project",
-      "commandLineArgs": "--source https://hivdb.stanford.edu/graphql --out ../../../../../samples/hivdb.graphql"
+      "commandLineArgs": "--verbose --source https://hivdb.stanford.edu/graphql?refid=abc --out ../../../../../samples/hivdb.graphql"
     },
     "countries": {
       "commandName": "Project",
