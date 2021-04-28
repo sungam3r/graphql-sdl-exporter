@@ -19,7 +19,7 @@ namespace GraphQL.SDLExporter
 
         public void Dispose() => _client.Dispose();
 
-        public async Task<GraphQLResponse> SendQueryAsync(string requestUri, string query, string operationName)
+        public async Task<GraphQLResponse?> SendQueryAsync(string requestUri, string query, string operationName)
         {
             using (var httpContent = new StringContent(JsonConvert.SerializeObject(new { query, operationName }), Encoding.UTF8, "application/json"))
             {
@@ -47,7 +47,7 @@ namespace GraphQL.SDLExporter
             }
         }
 
-        private static async Task<GraphQLResponse> ReadHttpResponseMessageAsync(HttpResponseMessage httpResponseMessage)
+        private static async Task<GraphQLResponse?> ReadHttpResponseMessageAsync(HttpResponseMessage httpResponseMessage)
         {
             string content = await httpResponseMessage.Content.ReadAsStringAsync();
 

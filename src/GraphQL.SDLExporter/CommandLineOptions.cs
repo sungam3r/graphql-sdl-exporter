@@ -18,6 +18,12 @@ namespace GraphQL.SDLExporter
         public Func<string, string> ConfigureIntrospectionQuery { get; set; } = query => query;
 
         /// <summary>
+        /// Allows you to specify a file with your own introspection query.
+        /// </summary>
+        [Option("introspection-file", Required = false, HelpText = "Allows you to specify a file with your own introspection query")]
+        public string? IntrospectionQueryFile { get; set; }
+
+        /// <summary>
         /// A factory to create <see cref="HttpClient"/> used to send an introspection query.
         /// </summary>
         public Func<CommandLineOptions, HttpClient> HttpClientFactory { get; set; } = options =>
@@ -25,7 +31,7 @@ namespace GraphQL.SDLExporter
             var client = new HttpClient(new HttpClientHandler { AllowAutoRedirect = true });
             // UserAgent is always filled, some APIs require it to be specified (https://developer.github.com/v3/#user-agent-required)
             var asmName = Assembly.GetExecutingAssembly().GetName();
-            client.DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue(asmName.Name, asmName.Version.ToString()));
+            client.DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue(asmName.Name!, asmName.Version?.ToString() ?? "1.0.0"));
 
             if (!string.IsNullOrEmpty(options.Authentication))
             {
@@ -45,31 +51,31 @@ namespace GraphQL.SDLExporter
         /// or URL to the GraphQL Web API.
         /// </summary>
         [Option("source", Required = true, HelpText = "Schema source - executable file or URL")]
-        public string Source { get; set; }
+        public string Source { get; set; } = null!;
 
         /// <summary> Gets or sets the URL where the process will be launched if an executable file has been specified as --source. </summary>
         [Option("url", Required = false, Default = "http://localhost:8088", HelpText = "URL to start process")]
-        public string ServiceUrl { get; set; }
+        public string? ServiceUrl { get; set; }
 
         /// <summary> Gets or sets additional command line arguments in case of using the executable file. </summary>
         [Option("args", Required = false, HelpText = "Additional command line arguments in case of using the executable file")]
-        public string AdditionalCommandLineArgs { get; set; }
+        public string? AdditionalCommandLineArgs { get; set; }
 
         /// <summary> Gets or sets the relative path for the GraphQL API when using the --url option. </summary>
         [Option("api-path", Required = false, Default = "/graphql", HelpText = "Relative path for GraphQL API when using --url option")]
-        public string GraphQLRelativePath { get; set; }
+        public string? GraphQLRelativePath { get; set; }
 
         /// <summary> Gets or sets the authentication method. The value is specified as schema|parameter. </summary>
         /// <example> bearer|05c9b6cddb96df2bf854d13acc2fcaf85ca181ec </example>
         /// <example> basic|user:secret </example>
         [Option("auth", Required = false, HelpText = "Authentication method in schema|parameter format")]
-        public string Authentication { get; set; }
+        public string? Authentication { get; set; }
 
         internal bool FromURL => Source.StartsWith("http://", StringComparison.InvariantCultureIgnoreCase) || Source.StartsWith("https://", StringComparison.InvariantCultureIgnoreCase);
 
         /// <summary> Gets or sets the output SDL file. </summary>
         [Option("out", Required = false, HelpText = "The output SDL file. If not specified, then the schema will be saved as <Source>.graphql")]
-        public string GeneratedFileName { get; set; }
+        public string? GeneratedFileName { get; set; }
 
         /// <summary> Gets or sets a value indicating whether to include descriptions of types and fields in the output file. </summary>
         [Option("include-descriptions", Required = false, HelpText = "Include descriptions as comments in output file")]

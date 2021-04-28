@@ -32,6 +32,17 @@ You can install the latest version via [NuGet](https://www.nuget.org/packages/do
 > dotnet tool install -g dotnet-sdlexport
 ```
 
+## Command Line Options
+
+Just type
+
+```
+> sdlexport
+```
+
+to see all available options. See [CommandLineOptions](src/GraphQL.SDLExporter/CommandLineOptions.cs)
+for more information.
+
 ## What is it ?
 
 This tool generates a text SDL (Schema Definition Language) file from the given URL or path to the
