@@ -128,6 +128,9 @@ namespace GraphQL.SDLExporter
 
             if (!string.IsNullOrEmpty(Authentication))
             {
+                if (File.Exists(Authentication))
+                    Authentication = File.ReadAllText(Authentication);
+
                 string[] parts = Authentication.Split('|');
                 if (parts.Length != 2 || string.IsNullOrEmpty(parts[0]) || string.IsNullOrEmpty(parts[1]))
                 {
