@@ -77,5 +77,30 @@ namespace GraphQL.SDLExporter.Tests
             File.Exists("countries.trevorblades.graphql").ShouldBeTrue();
             File.ReadAllText("countries.trevorblades.graphql").ShouldMatchApproved(opt => opt.WithFilenameGenerator((_, __, ___, ____) => "countries.trevorblades.approved.graphql"));
         }
+
+        /// <summary>
+        /// Basic export test 4.
+        /// </summary>
+        [Fact(Skip = "Add your auth token in .githubtoken.txt and run manually")]
+        public void Export_Should_Work_4()
+        {
+            var name = "github.graphql";
+            var writer = new SDLWriter
+            {
+                Options = new CommandLineOptions
+                {
+                    Source = "https://api.github.com/graphql",
+                    IncludeDescriptions = true,
+                    GeneratedFileName = name,
+                    // github.com does not support __Schema.description field!
+                    ConfigureIntrospectionQuery = query => query.Replace("__schema {\n      description", "__schema {"),
+                    Authentication = "..//..//..//..//..//.githubtoken.txt"
+                }
+            };
+
+            writer.Execute().ShouldBe(0);
+            File.Exists(name).ShouldBeTrue();
+            File.ReadAllText(name).ShouldMatchApproved(opt => opt.WithFilenameGenerator((_, __, ___, ____) => "github.approved.graphql"));
+        }
     }
 }

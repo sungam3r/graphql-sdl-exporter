@@ -23,7 +23,13 @@ namespace GraphQL.SDLExporter
             try
             {
                 Console.ForegroundColor = color;
-                to.WriteLine(text);
+
+                // If the text is empty, then the intention of the caller is very likely
+                // a visual separation of blocks of text, so there is no need to display the time.
+                if (string.IsNullOrEmpty(text))
+                    to.WriteLine();
+                else
+                    to.WriteLine($"[{DateTime.Now:HH:mm:ss}] {text}");
             }
             finally
             {

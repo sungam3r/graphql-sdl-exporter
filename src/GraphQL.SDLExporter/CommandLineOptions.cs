@@ -65,7 +65,10 @@ namespace GraphQL.SDLExporter
         [Option("api-path", Required = false, Default = "/graphql", HelpText = "Relative path for GraphQL API when using --url option")]
         public string? GraphQLRelativePath { get; set; }
 
-        /// <summary> Gets or sets the authentication method. The value is specified as schema|parameter. </summary>
+        /// <summary>
+        /// Gets or sets the authentication method. The value is specified as schema|parameter.
+        /// Also in this parameter you can set the path to the file with this data.
+        /// </summary>
         /// <example> bearer|05c9b6cddb96df2bf854d13acc2fcaf85ca181ec </example>
         /// <example> basic|user:secret </example>
         [Option("auth", Required = false, HelpText = "Authentication method in schema|parameter format")]
@@ -128,6 +131,9 @@ namespace GraphQL.SDLExporter
 
             if (!string.IsNullOrEmpty(Authentication))
             {
+                if (File.Exists(Authentication))
+                    Authentication = File.ReadAllText(Authentication);
+
                 string[] parts = Authentication.Split('|');
                 if (parts.Length != 2 || string.IsNullOrEmpty(parts[0]) || string.IsNullOrEmpty(parts[1]))
                 {
