@@ -81,7 +81,7 @@ namespace GraphQL.SDLExporter.Tests
         /// <summary>
         /// Basic export test 4.
         /// </summary>
-        [Fact]
+        [Fact(Skip = "Add your auth token in .githubtoken.txt and run manually")]
         public void Export_Should_Work_4()
         {
             var name = "github.graphql";
