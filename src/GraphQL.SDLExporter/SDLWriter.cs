@@ -161,12 +161,17 @@ namespace GraphQL.SDLExporter
 
                         if (response?.Data == null || response?.Errors?.Any() == true)
                         {
-                            if (response?.Errors?.Any() == true)
+                            void TryPrintErrors(string header)
                             {
-                                ColoredConsole.WriteError("Modern introspection request with directives contains errors:");
-                                foreach (var error in response.Errors)
-                                    ColoredConsole.WriteError(error.Message);
+                                if (response?.Errors?.Any() == true)
+                                {
+                                    ColoredConsole.WriteError(header);
+                                    foreach (var error in response.Errors)
+                                        ColoredConsole.WriteError(error.Message);
+                                }
                             }
+
+                            TryPrintErrors("Modern introspection request with directives contains errors:");
 
                             if (Options.IntrospectionQueryFile == null)
                             {
@@ -174,6 +179,7 @@ namespace GraphQL.SDLExporter
                                 response = client.SendQueryAsync(serviceUrl, Options.ConfigureIntrospectionQuery(IntrospectionQuery.Classic), "IntrospectionQuery").GetAwaiter().GetResult();
                                 if (response?.Data != null)
                                     ColoredConsole.WriteInfo($"Received classic introspection response from {serviceUrl}");
+                                TryPrintErrors("Classic introspection request without directives contains errors:");
                             }
                             else
                             {
@@ -181,6 +187,7 @@ namespace GraphQL.SDLExporter
                                 response = client.SendQueryAsync(serviceUrl, Options.ConfigureIntrospectionQuery(File.ReadAllText(Options.IntrospectionQueryFile)), "IntrospectionQuery").GetAwaiter().GetResult();
                                 if (response?.Data != null)
                                     ColoredConsole.WriteInfo($"Received introspection response from {serviceUrl}");
+                                TryPrintErrors($"Custom introspection query from '{Options.IntrospectionQueryFile}' contains errors:");
                             }
                         }
 
