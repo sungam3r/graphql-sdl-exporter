@@ -5,6 +5,8 @@ namespace GraphQL.SDLExporter
 {
     internal static class ColoredConsole
     {
+        private static readonly bool _runUnderCI = Environment.GetEnvironmentVariable("GITHUB_ACTIONS") != null;
+
         public static ConsoleColor ErrorColor { get; set; } = ConsoleColor.Red;
 
         public static ConsoleColor InfoColor { get; set; } = ConsoleColor.Gray;
@@ -22,7 +24,8 @@ namespace GraphQL.SDLExporter
             var old = Console.ForegroundColor;
             try
             {
-                Console.ForegroundColor = color;
+                if (!_runUnderCI)
+                    Console.ForegroundColor = color;
 
                 // If the text is empty, then the intention of the caller is very likely
                 // a visual separation of blocks of text, so there is no need to display the time.
@@ -33,7 +36,8 @@ namespace GraphQL.SDLExporter
             }
             finally
             {
-                Console.ForegroundColor = old;
+                if (!_runUnderCI)
+                    Console.ForegroundColor = old;
             }
         }
     }
