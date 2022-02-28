@@ -28,6 +28,7 @@ namespace GraphQL.SDLExporter
                     ColoredConsole.WriteInfo($"POST request to {requestUri} returned {(int)postResponse.StatusCode} ({postResponse.StatusCode})");
                     PrintHeaders(postResponse);
 
+                    Console.WriteLine("======TEST=====");
                     if (postResponse.StatusCode == HttpStatusCode.MethodNotAllowed)
                     {
                         ColoredConsole.WriteInfo("Switching to GET method");
@@ -51,8 +52,13 @@ namespace GraphQL.SDLExporter
         {
             string content = await httpResponseMessage.Content.ReadAsStringAsync();
 
+            Console.WriteLine("////////////////////////////");
+            Console.WriteLine(content);
+
             if (!httpResponseMessage.IsSuccessStatusCode)
                 ColoredConsole.WriteWarning($"Server returned HTTP response code {(int)httpResponseMessage.StatusCode} ({httpResponseMessage.StatusCode}){(string.IsNullOrEmpty(content) ? " with empty body" : ": " + content)}");
+
+
 
             return JsonConvert.DeserializeObject<GraphQLResponse>(content, new JsonSerializerSettings { ContractResolver = new CamelCasePropertyNamesContractResolver() });
         }
