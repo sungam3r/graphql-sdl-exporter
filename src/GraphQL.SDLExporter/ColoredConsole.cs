@@ -32,7 +32,7 @@ namespace GraphQL.SDLExporter
                 if (string.IsNullOrEmpty(text))
                     to.WriteLine();
                 else
-                    to.WriteLine($"[{DateTime.Now:HH:mm:ss}] {text}");
+                    to.WriteLine($"[{DateTime.Now:HH:mm:ss} {_runUnderCI}] {text}");
             }
             finally
             {
