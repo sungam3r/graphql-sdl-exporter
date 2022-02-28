@@ -21,12 +21,18 @@ namespace GraphQL.SDLExporter
 
         public async Task<GraphQLResponse?> SendQueryAsync(string requestUri, string query, string operationName)
         {
-            using (var httpContent = new StringContent(JsonConvert.SerializeObject(new { query, operationName }), Encoding.UTF8, "application/json"))
+            var text = JsonConvert.SerializeObject(new { query, operationName });
+            using (var httpContent = new StringContent(text, Encoding.UTF8, "application/json"))
             {
                 using (var postResponse = await _client.PostAsync(requestUri, httpContent))
                 {
                     ColoredConsole.WriteInfo($"POST request to {requestUri} returned {(int)postResponse.StatusCode} ({postResponse.StatusCode})");
                     PrintHeaders(postResponse);
+                    if (!postResponse.IsSuccessStatusCode)
+                    {
+                        ColoredConsole.WriteInfo("Request content:");
+                        ColoredConsole.WriteInfo(text);
+                    }
 
                     Console.WriteLine("======TEST=====");
                     if (postResponse.StatusCode == HttpStatusCode.MethodNotAllowed)
