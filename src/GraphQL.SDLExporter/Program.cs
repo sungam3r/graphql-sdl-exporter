@@ -4,7 +4,7 @@ namespace GraphQL.SDLExporter;
 
 internal static class Program
 {
-    internal static DateTime Start = DateTime.Now;
+    internal static readonly DateTime Start = DateTime.Now;
 
     // DO NOT REMOVE: explicit cctor to initialize Start - https://csharpindepth.com/Articles/BeforeFieldInit
     static Program() { }
