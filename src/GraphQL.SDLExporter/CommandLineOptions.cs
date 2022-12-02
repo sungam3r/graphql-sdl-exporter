@@ -38,31 +38,31 @@ public sealed class CommandLineOptions
         return client;
     };
 
-    /// <summary> Gets or sets a value indicating that detailed log output is required. </summary>
+    /// <summary> A value indicating that detailed log output is required. </summary>
     [Option("verbose", Required = false, HelpText = "Enables verbose log output")]
     public bool Verbose { get; set; }
 
     /// <summary>
-    /// Gets or sets the source of the schema. This is the full name of the executable file to run
+    /// The source of the schema. This is the full name of the executable file to run
     /// or URL to the GraphQL Web API.
     /// </summary>
     [Option("source", Required = true, HelpText = "Schema source - executable file or URL")]
     public string Source { get; set; } = null!;
 
-    /// <summary> Gets or sets the URL where the process will be launched if an executable file has been specified as --source. </summary>
+    /// <summary> The URL where the process will be launched if an executable file has been specified as --source. </summary>
     [Option("url", Required = false, Default = "http://localhost:8088", HelpText = "URL to start process")]
     public string? ServiceUrl { get; set; }
 
-    /// <summary> Gets or sets additional command line arguments in case of using the executable file. </summary>
+    /// <summary> Additional command line arguments in case of using the executable file. </summary>
     [Option("args", Required = false, HelpText = "Additional command line arguments in case of using the executable file")]
     public string? AdditionalCommandLineArgs { get; set; }
 
-    /// <summary> Gets or sets the relative path for the GraphQL API when using the --url option. </summary>
+    /// <summary> The relative path for the GraphQL API when using the --url option. </summary>
     [Option("api-path", Required = false, Default = "/graphql", HelpText = "Relative path for GraphQL API when using --url option")]
     public string? GraphQLRelativePath { get; set; }
 
     /// <summary>
-    /// Gets or sets the authentication method. The value is specified as schema|parameter.
+    /// The authentication method. The value is specified as schema|parameter.
     /// Also in this parameter you can set the path to the file with this data.
     /// </summary>
     /// <example> bearer|05c9b6cddb96df2bf854d13acc2fcaf85ca181ec </example>
@@ -72,13 +72,17 @@ public sealed class CommandLineOptions
 
     internal bool FromURL => Source.StartsWith("http://", StringComparison.InvariantCultureIgnoreCase) || Source.StartsWith("https://", StringComparison.InvariantCultureIgnoreCase);
 
-    /// <summary> Gets or sets the output SDL file. </summary>
+    /// <summary> The output SDL file. </summary>
     [Option("out", Required = false, HelpText = "The output SDL file. If not specified, then the schema will be saved as <Source>.graphql")]
     public string? GeneratedFileName { get; set; }
 
-    /// <summary> Gets or sets a value indicating whether to include descriptions of types and fields in the output file. </summary>
+    /// <summary> A value indicating whether to include descriptions of types and fields in the output file. </summary>
     [Option("include-descriptions", Required = false, HelpText = "Include descriptions as comments in output file")]
     public bool IncludeDescriptions { get; set; }
+
+    /// <summary> A timeout in seconds for generating SDL. By default 0, i.e. no timeout.</summary>
+    [Option("timeout", Required = false, HelpText = "Timeout in seconds for generating SDL; 0 - no timeout")]
+    public int Timeout { get; set; }
 
     /// <summary>
     /// Examples.
@@ -94,7 +98,8 @@ public sealed class CommandLineOptions
                 GeneratedFileName = "D:\\MySchema.graphql",
                 IncludeDescriptions = true,
                 ServiceUrl = "http://localhost:5000",
-                GraphQLRelativePath = "/api/graphql"
+                GraphQLRelativePath = "/api/graphql",
+                Timeout = 10,
             });
 
             yield return new Example("Generating SDL from URL", new CommandLineOptions
@@ -136,6 +141,11 @@ public sealed class CommandLineOptions
                 ColoredConsole.WriteError("The value of the --auth option must be specified in the schema|parameter format.");
                 return 3;
             }
+        }
+
+        if (Timeout < 0)
+        {
+            ColoredConsole.WriteError("The value of the --timeout option should be non-negative integer");
         }
 
         return 0;

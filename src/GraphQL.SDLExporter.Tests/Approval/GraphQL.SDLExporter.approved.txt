@@ -22,6 +22,8 @@ namespace GraphQL.SDLExporter
         public string? ServiceUrl { get; set; }
         [CommandLine.Option("source", HelpText="Schema source - executable file or URL", Required=true)]
         public string Source { get; set; }
+        [CommandLine.Option("timeout", HelpText="Timeout in seconds for generating SDL; 0 - no timeout", Required=false)]
+        public int Timeout { get; set; }
         [CommandLine.Option("verbose", HelpText="Enables verbose log output", Required=false)]
         public bool Verbose { get; set; }
         [CommandLine.Text.Usage]

@@ -24,6 +24,10 @@ public sealed class SDLWriter
         if (validated != 0)
             return validated;
 
+        var cts = new CancellationTokenSource();
+        if (Options.Timeout > 0)
+            cts.CancelAfter(TimeSpan.FromSeconds(Options.Timeout));
+
         Options.GeneratedFileName = Options.GeneratedFileName ?? (Options.FromURL ? "service" : Options.Source) + ".graphql";
 
         ColoredConsole.WriteInfo($"Start exporting SDL from {Options.Source}");
@@ -37,7 +41,7 @@ public sealed class SDLWriter
 
         if (Options.FromURL)
         {
-            response = GetIntrospectionResponseFromUrl();
+            response = GetIntrospectionResponseFromUrl(cts.Token);
         }
         else
         {
@@ -84,7 +88,22 @@ public sealed class SDLWriter
 
                 ColoredConsole.WriteInfo($"The process {processName} was started at {Options.ServiceUrl}");
 
-                response = GetIntrospectionResponseFromUrl();
+                if (Options.Timeout > 0)
+                {
+                    cts.Token.Register(() =>
+                    {
+                        try
+                        {
+                            targetService?.Kill();
+                        }
+                        catch (InvalidOperationException)
+                        {
+                            // the process has already completed
+                        }
+                    });
+                }
+
+                response = GetIntrospectionResponseFromUrl(cts.Token);
             }
             finally
             {
@@ -107,6 +126,7 @@ public sealed class SDLWriter
             return 100;
         }
 
+        cts.Token.ThrowIfCancellationRequested();
         string? sdl = ConvertIntrospectionResponseToSDL(response);
 
         if (string.IsNullOrEmpty(sdl))
@@ -122,8 +142,10 @@ public sealed class SDLWriter
         return 0;
     }
 
-    private GraphQLResponse? GetIntrospectionResponseFromUrl()
+    private GraphQLResponse? GetIntrospectionResponseFromUrl(CancellationToken cancellationToken)
     {
+        cancellationToken.ThrowIfCancellationRequested();
+
         string serviceUrl = Options.FromURL ? Options.Source : Options.ServiceUrl + Options.GraphQLRelativePath;
 
         using (var client = new GraphQLHttpClient(Options.HttpClientFactory(Options)))
@@ -135,6 +157,8 @@ public sealed class SDLWriter
 
             while (true)
             {
+                cancellationToken.ThrowIfCancellationRequested();
+
                 GraphQLResponse? response = null;
                 ColoredConsole.WriteInfo($"Sending introspection request #{retry} to {serviceUrl}");
 
@@ -145,7 +169,7 @@ public sealed class SDLWriter
                     {
                         try
                         {
-                            response = client.SendQueryAsync(serviceUrl, Options.ConfigureIntrospectionQuery(IntrospectionQuery.Modern), "IntrospectionQuery").GetAwaiter().GetResult();
+                            response = client.SendQueryAsync(serviceUrl, Options.ConfigureIntrospectionQuery(IntrospectionQuery.Modern), "IntrospectionQuery", cancellationToken).GetAwaiter().GetResult();
                             if (response?.Data != null)
                                 ColoredConsole.WriteInfo($"Received modern introspection response from {serviceUrl}");
                         }
@@ -172,7 +196,7 @@ public sealed class SDLWriter
                         if (Options.IntrospectionQueryFile == null)
                         {
                             ColoredConsole.WriteInfo("Fallback to classic introspection request without directives");
-                            response = client.SendQueryAsync(serviceUrl, Options.ConfigureIntrospectionQuery(IntrospectionQuery.Classic), "IntrospectionQuery").GetAwaiter().GetResult();
+                            response = client.SendQueryAsync(serviceUrl, Options.ConfigureIntrospectionQuery(IntrospectionQuery.Classic), "IntrospectionQuery", cancellationToken).GetAwaiter().GetResult();
                             if (response?.Data != null)
                                 ColoredConsole.WriteInfo($"Received classic introspection response from {serviceUrl}");
                             TryPrintErrors("Classic introspection request without directives contains errors:");
@@ -180,7 +204,7 @@ public sealed class SDLWriter
                         else
                         {
                             ColoredConsole.WriteInfo($"Calling custom introspection query from '{Options.IntrospectionQueryFile}'.");
-                            response = client.SendQueryAsync(serviceUrl, Options.ConfigureIntrospectionQuery(File.ReadAllText(Options.IntrospectionQueryFile)), "IntrospectionQuery").GetAwaiter().GetResult();
+                            response = client.SendQueryAsync(serviceUrl, Options.ConfigureIntrospectionQuery(File.ReadAllText(Options.IntrospectionQueryFile)), "IntrospectionQuery", cancellationToken).GetAwaiter().GetResult();
                             if (response?.Data != null)
                                 ColoredConsole.WriteInfo($"Received introspection response from {serviceUrl}");
                             TryPrintErrors($"Custom introspection query from '{Options.IntrospectionQueryFile}' contains errors:");

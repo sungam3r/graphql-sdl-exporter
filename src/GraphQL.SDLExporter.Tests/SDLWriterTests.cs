@@ -46,6 +46,7 @@ public class SDLWriterTests
                 GeneratedFileName = "hivdb-generated.graphql",
                 // hivdb.stanford.edu does not support __Schema.description field!
                 ConfigureIntrospectionQuery = query => query.Replace("__schema {\n      description", "__schema {"),
+                Timeout = 10,
             }
         };
 
@@ -93,7 +94,8 @@ public class SDLWriterTests
                 GeneratedFileName = name,
                 // github.com does not support __Schema.description field!
                 ConfigureIntrospectionQuery = query => query.Replace("__schema {\n      description", "__schema {"),
-                Authentication = "..//..//..//..//..//.githubtoken.txt"
+                Authentication = "..//..//..//..//..//.githubtoken.txt",
+                Timeout = 10,
             }
         };
 
