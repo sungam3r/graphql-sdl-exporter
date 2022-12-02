@@ -4,23 +4,23 @@
 
 ![License](https://img.shields.io/github/license/sungam3r/graphql-sdl-exporter)
 
-[![Run unit tests](https://github.com/sungam3r/graphql-sdl-exporter/actions/workflows/test.yml/badge.svg)](https://github.com/sungam3r/graphql-sdl-exporter/actions/workflows/test.yml)
-[![Publish preview to GitHub registry](https://github.com/sungam3r/graphql-sdl-exporter/actions/workflows/publish-preview.yml/badge.svg)](https://github.com/sungam3r/graphql-sdl-exporter/actions/workflows/publish-preview.yml)
-[![Publish release to Nuget registry](https://github.com/sungam3r/graphql-sdl-exporter/actions/workflows/publish-release.yml/badge.svg)](https://github.com/sungam3r/graphql-sdl-exporter/actions/workflows/publish-release.yml)
-[![CodeQL analysis](https://github.com/sungam3r/graphql-sdl-exporter/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/sungam3r/graphql-sdl-exporter/actions/workflows/codeql-analysis.yml)
-
 [![codecov](https://codecov.io/gh/sungam3r/graphql-sdl-exporter/branch/master/graph/badge.svg?token=UJPTEBC73U)](https://codecov.io/gh/sungam3r/graphql-sdl-exporter)
-[![Total alerts](https://img.shields.io/lgtm/alerts/g/sungam3r/graphql-sdl-exporter.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/sungam3r/graphql-sdl-exporter/alerts/)
-[![Language grade: C#](https://img.shields.io/lgtm/grade/csharp/g/sungam3r/graphql-sdl-exporter.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/sungam3r/graphql-sdl-exporter/context:csharp)
-
-[![NuGet](https://img.shields.io/nuget/v/dotnet-sdlexport)](https://www.nuget.org/packages/dotnet-sdlexport)
 [![Nuget](https://img.shields.io/nuget/dt/dotnet-sdlexport)](https://www.nuget.org/packages/dotnet-sdlexport)
+[![NuGet](https://img.shields.io/nuget/v/dotnet-sdlexport)](https://www.nuget.org/packages/dotnet-sdlexport)
 
+[![GitHub Release Date](https://img.shields.io/github/release-date/sungam3r/graphql-sdl-exporter?label=released)](https://github.com/sungam3r/graphql-sdl-exporter/releases)
+[![GitHub commits since latest release (by date)](https://img.shields.io/github/commits-since/sungam3r/graphql-sdl-exporter/latest?label=new+commits)](https://github.com/sungam3r/graphql-sdl-exporter/commits/master)
+![Size](https://img.shields.io/github/repo-size/sungam3r/graphql-sdl-exporter)
+
+[![GitHub contributors](https://img.shields.io/github/contributors/sungam3r/graphql-sdl-exporter)](https://github.com/sungam3r/graphql-sdl-exporter/graphs/contributors)
 ![Activity](https://img.shields.io/github/commit-activity/w/sungam3r/graphql-sdl-exporter)
 ![Activity](https://img.shields.io/github/commit-activity/m/sungam3r/graphql-sdl-exporter)
 ![Activity](https://img.shields.io/github/commit-activity/y/sungam3r/graphql-sdl-exporter)
 
-![Size](https://img.shields.io/github/repo-size/sungam3r/graphql-sdl-exporter)
+[![Run unit tests](https://github.com/sungam3r/graphql-sdl-exporter/actions/workflows/test.yml/badge.svg)](https://github.com/sungam3r/graphql-sdl-exporter/actions/workflows/test.yml)
+[![Publish preview to GitHub registry](https://github.com/sungam3r/graphql-sdl-exporter/actions/workflows/publish-preview.yml/badge.svg)](https://github.com/sungam3r/graphql-sdl-exporter/actions/workflows/publish-preview.yml)
+[![Publish release to Nuget registry](https://github.com/sungam3r/graphql-sdl-exporter/actions/workflows/publish-release.yml/badge.svg)](https://github.com/sungam3r/graphql-sdl-exporter/actions/workflows/publish-release.yml)
+[![CodeQL analysis](https://github.com/sungam3r/graphql-sdl-exporter/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/sungam3r/graphql-sdl-exporter/actions/workflows/codeql-analysis.yml)
 
 .NET Core Global Tool for generating SDL from url or executable file.
 
