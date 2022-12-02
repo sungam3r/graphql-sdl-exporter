@@ -1,5 +1,4 @@
 using System.Diagnostics;
-using System.Threading;
 using GraphQL.IntrospectionModel;
 using GraphQL.IntrospectionModel.SDL;
 
