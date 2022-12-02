@@ -16,11 +16,11 @@ internal sealed class GraphQLHttpClient : IDisposable
 
     public void Dispose() => _client.Dispose();
 
-    public async Task<GraphQLResponse?> SendQueryAsync(string requestUri, string query, string operationName)
+    public async Task<GraphQLResponse?> SendQueryAsync(string requestUri, string query, string operationName, CancellationToken cancellationToken)
     {
         using (var httpContent = new StringContent(JsonConvert.SerializeObject(new { query, operationName }), Encoding.UTF8, "application/json"))
         {
-            using (var postResponse = await _client.PostAsync(requestUri, httpContent))
+            using (var postResponse = await _client.PostAsync(requestUri, httpContent, cancellationToken))
             {
                 ColoredConsole.WriteInfo($"POST request to {requestUri} returned {(int)postResponse.StatusCode} ({postResponse.StatusCode})");
                 PrintHeaders(postResponse);
@@ -30,7 +30,7 @@ internal sealed class GraphQLHttpClient : IDisposable
                     ColoredConsole.WriteInfo("Switching to GET method");
 
                     // execute GET if POST not allowed
-                    using (var getResponse = await _client.GetAsync($"{requestUri}?query={query}"))
+                    using (var getResponse = await _client.GetAsync($"{requestUri}?query={query}", cancellationToken))
                     {
                         ColoredConsole.WriteInfo($"GET request to {requestUri} returned {(int)postResponse.StatusCode} ({getResponse.StatusCode})");
                         PrintHeaders(getResponse);
