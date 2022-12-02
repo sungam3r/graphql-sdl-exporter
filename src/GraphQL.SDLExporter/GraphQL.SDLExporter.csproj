@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFrameworks>netcoreapp3.1;net5;net6</TargetFrameworks>
+    <TargetFrameworks>netcoreapp3.1;net5;net6;net7</TargetFrameworks>
     <PackageTags>GraphQL;Introspection;SDL</PackageTags>
     <Title>.NET Core Global Tool for generating SDL from url or executable file</Title>
     <Description>$(Title)</Description>

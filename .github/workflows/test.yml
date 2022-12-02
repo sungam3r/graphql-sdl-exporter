@@ -31,13 +31,14 @@ jobs:
     steps:
       - name: Checkout source
         uses: actions/checkout@v3
-      - name: Setup .NET Core SDKs
+      - name: Setup .NET SDKs
         uses: actions/setup-dotnet@v3
         with:
           dotnet-version: |
             3.1.x
             5.0.x
             6.0.x
+            7.0.x
           source-url: https://nuget.pkg.github.com/graphql-dotnet/index.json
         env:
           NUGET_AUTH_TOKEN: ${{secrets.GITHUB_TOKEN}}
@@ -62,7 +63,7 @@ jobs:
         if: ${{ startsWith(matrix.os, 'ubuntu') }}
         uses: codecov/codecov-action@v3
         with:
-          files: .coverage/GraphQL.SDLExporter.Tests/coverage.net5.opencover.xml
+          files: .coverage/GraphQL.SDLExporter.Tests/coverage.net7.opencover.xml
 
   buildcheck:
     needs:
