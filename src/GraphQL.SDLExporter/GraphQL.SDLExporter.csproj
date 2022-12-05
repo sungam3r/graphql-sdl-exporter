@@ -13,7 +13,7 @@
 
   <ItemGroup>
     <PackageReference Include="CommandLineParser" Version="2.9.1" />
-    <PackageReference Include="GraphQL.IntrospectionModel" Version="0.0.15" />
+    <PackageReference Include="GraphQL.IntrospectionModel" Version="0.0.16" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.2" />
   </ItemGroup>
 
