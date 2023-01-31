@@ -148,92 +148,91 @@ public sealed class SDLWriter
 
         string serviceUrl = Options.FromURL ? Options.Source : Options.ServiceUrl + Options.GraphQLRelativePath;
 
-        using (var client = new GraphQLHttpClient(Options.HttpClientFactory(Options)))
+        using var client = new GraphQLHttpClient(Options.HttpClientFactory(Options));
+
+        // There should be enough time to start. If necessary, this can be moved to the options.
+        int retry = 1;
+        const int MAX_RETRY = 10;
+        ColoredConsole.WriteInfo($"Starting to poll {serviceUrl} with max {MAX_RETRY} attempts.");
+
+        while (true)
         {
-            // There should be enough time to start. If necessary, this can be moved to the options.
-            int retry = 1;
-            const int MAX_RETRY = 10;
-            ColoredConsole.WriteInfo($"Starting to poll {serviceUrl} with max {MAX_RETRY} attempts.");
+            cancellationToken.ThrowIfCancellationRequested();
 
-            while (true)
+            GraphQLResponse? response = null;
+            ColoredConsole.WriteInfo($"Sending introspection request #{retry} to {serviceUrl}");
+
+            try
             {
-                cancellationToken.ThrowIfCancellationRequested();
-
-                GraphQLResponse? response = null;
-                ColoredConsole.WriteInfo($"Sending introspection request #{retry} to {serviceUrl}");
-
-                try
+                // skip modern introspection request with directives if custom introspection query was specified
+                if (Options.IntrospectionQueryFile == null)
                 {
-                    // skip modern introspection request with directives if custom introspection query was specified
+                    try
+                    {
+                        response = client.SendQueryAsync(serviceUrl, Options.ConfigureIntrospectionQuery(IntrospectionQuery.Modern), "IntrospectionQuery", cancellationToken).GetAwaiter().GetResult();
+                        if (response?.Data != null)
+                            ColoredConsole.WriteInfo($"Received modern introspection response from {serviceUrl}");
+                    }
+                    catch (Exception ex)
+                    {
+                        ColoredConsole.WriteError($"Failed to send modern introspection request with directives: {(Options.Verbose ? ex.ToString() : ex.Message)}");
+                    }
+                }
+
+                if (response?.Data == null || response?.Errors?.Any() == true)
+                {
+                    void TryPrintErrors(string header)
+                    {
+                        if (response?.Errors?.Any() == true)
+                        {
+                            ColoredConsole.WriteError(header);
+                            foreach (var error in response.Errors)
+                                ColoredConsole.WriteError(error.Message);
+                        }
+                    }
+
+                    TryPrintErrors("Modern introspection request with directives contains errors:");
+
                     if (Options.IntrospectionQueryFile == null)
                     {
-                        try
-                        {
-                            response = client.SendQueryAsync(serviceUrl, Options.ConfigureIntrospectionQuery(IntrospectionQuery.Modern), "IntrospectionQuery", cancellationToken).GetAwaiter().GetResult();
-                            if (response?.Data != null)
-                                ColoredConsole.WriteInfo($"Received modern introspection response from {serviceUrl}");
-                        }
-                        catch (Exception ex)
-                        {
-                            ColoredConsole.WriteError($"Failed to send modern introspection request with directives: {(Options.Verbose ? ex.ToString() : ex.Message)}");
-                        }
+                        ColoredConsole.WriteInfo("Fallback to classic introspection request without directives");
+                        response = client.SendQueryAsync(serviceUrl, Options.ConfigureIntrospectionQuery(IntrospectionQuery.Classic), "IntrospectionQuery", cancellationToken).GetAwaiter().GetResult();
+                        if (response?.Data != null)
+                            ColoredConsole.WriteInfo($"Received classic introspection response from {serviceUrl}");
+                        TryPrintErrors("Classic introspection request without directives contains errors:");
                     }
-
-                    if (response?.Data == null || response?.Errors?.Any() == true)
+                    else
                     {
-                        void TryPrintErrors(string header)
-                        {
-                            if (response?.Errors?.Any() == true)
-                            {
-                                ColoredConsole.WriteError(header);
-                                foreach (var error in response.Errors)
-                                    ColoredConsole.WriteError(error.Message);
-                            }
-                        }
-
-                        TryPrintErrors("Modern introspection request with directives contains errors:");
-
-                        if (Options.IntrospectionQueryFile == null)
-                        {
-                            ColoredConsole.WriteInfo("Fallback to classic introspection request without directives");
-                            response = client.SendQueryAsync(serviceUrl, Options.ConfigureIntrospectionQuery(IntrospectionQuery.Classic), "IntrospectionQuery", cancellationToken).GetAwaiter().GetResult();
-                            if (response?.Data != null)
-                                ColoredConsole.WriteInfo($"Received classic introspection response from {serviceUrl}");
-                            TryPrintErrors("Classic introspection request without directives contains errors:");
-                        }
-                        else
-                        {
-                            ColoredConsole.WriteInfo($"Calling custom introspection query from '{Options.IntrospectionQueryFile}'.");
-                            response = client.SendQueryAsync(serviceUrl, Options.ConfigureIntrospectionQuery(File.ReadAllText(Options.IntrospectionQueryFile)), "IntrospectionQuery", cancellationToken).GetAwaiter().GetResult();
-                            if (response?.Data != null)
-                                ColoredConsole.WriteInfo($"Received introspection response from {serviceUrl}");
-                            TryPrintErrors($"Custom introspection query from '{Options.IntrospectionQueryFile}' contains errors:");
-                        }
+                        ColoredConsole.WriteInfo($"Calling custom introspection query from '{Options.IntrospectionQueryFile}'.");
+                        response = client.SendQueryAsync(serviceUrl, Options.ConfigureIntrospectionQuery(File.ReadAllText(Options.IntrospectionQueryFile)), "IntrospectionQuery", cancellationToken).GetAwaiter().GetResult();
+                        if (response?.Data != null)
+                            ColoredConsole.WriteInfo($"Received introspection response from {serviceUrl}");
+                        TryPrintErrors($"Custom introspection query from '{Options.IntrospectionQueryFile}' contains errors:");
                     }
-
-                    return response;
                 }
-                catch (Exception e)
-                {
-                    ColoredConsole.WriteError($"An error occurred while executing an HTTP request ({retry}): {(Options.Verbose ? e.ToString() : e.Message)}");
 
-                    if (Options.FromURL)
-                        return null;
-
-                    ColoredConsole.WriteError($"Make sure that it is possible to start the process at {serviceUrl} and the required port is not used by another process. Perhaps the process has not yet started and cannot serve the request.");
-
-                    if (retry == MAX_RETRY)
-                    {
-                        ColoredConsole.WriteError($"Failed to load data from {serviceUrl} for {MAX_RETRY} attempts");
-                        return null; // that's enough
-                    }
-
-                    ++retry;
-                    ColoredConsole.WriteInfo($"Waiting 2 seconds and try again ({retry} of {MAX_RETRY}).");
-                    Thread.Sleep(2000);
-                }
+                return response;
             }
-        }
+            catch (Exception e)
+            {
+                ColoredConsole.WriteError($"An error occurred while executing an HTTP request ({retry}): {(Options.Verbose ? e.ToString() : e.Message)}");
+
+                if (Options.FromURL)
+                    return null;
+
+                ColoredConsole.WriteError($"Make sure that it is possible to start the process at {serviceUrl} and the required port is not used by another process. Perhaps the process has not yet started and cannot serve the request.");
+
+                if (retry == MAX_RETRY)
+                {
+                    ColoredConsole.WriteError($"Failed to load data from {serviceUrl} for {MAX_RETRY} attempts");
+                    return null; // that's enough
+                }
+
+                ++retry;
+                ColoredConsole.WriteInfo($"Waiting 2 seconds and try again ({retry} of {MAX_RETRY}).");
+                Thread.Sleep(2000);
+            }
+            }
     }
 
     private string? ConvertIntrospectionResponseToSDL(GraphQLResponse response)

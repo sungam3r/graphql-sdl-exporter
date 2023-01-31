@@ -18,30 +18,26 @@ internal sealed class GraphQLHttpClient : IDisposable
 
     public async Task<GraphQLResponse?> SendQueryAsync(string requestUri, string query, string operationName, CancellationToken cancellationToken)
     {
-        using (var httpContent = new StringContent(JsonConvert.SerializeObject(new { query, operationName }), Encoding.UTF8, "application/json"))
+        using var httpContent = new StringContent(JsonConvert.SerializeObject(new { query, operationName }), Encoding.UTF8, "application/json");
+        using var postResponse = await _client.PostAsync(requestUri, httpContent, cancellationToken);
+
+        ColoredConsole.WriteInfo($"POST request to {requestUri} returned {(int)postResponse.StatusCode} ({postResponse.StatusCode})");
+        PrintHeaders(postResponse);
+
+        if (postResponse.StatusCode == HttpStatusCode.MethodNotAllowed)
         {
-            using (var postResponse = await _client.PostAsync(requestUri, httpContent, cancellationToken))
-            {
-                ColoredConsole.WriteInfo($"POST request to {requestUri} returned {(int)postResponse.StatusCode} ({postResponse.StatusCode})");
-                PrintHeaders(postResponse);
+            ColoredConsole.WriteInfo("Switching to GET method");
 
-                if (postResponse.StatusCode == HttpStatusCode.MethodNotAllowed)
-                {
-                    ColoredConsole.WriteInfo("Switching to GET method");
+            // execute GET if POST not allowed
+            using var getResponse = await _client.GetAsync($"{requestUri}?query={query}", cancellationToken);
 
-                    // execute GET if POST not allowed
-                    using (var getResponse = await _client.GetAsync($"{requestUri}?query={query}", cancellationToken))
-                    {
-                        ColoredConsole.WriteInfo($"GET request to {requestUri} returned {(int)postResponse.StatusCode} ({getResponse.StatusCode})");
-                        PrintHeaders(getResponse);
+            ColoredConsole.WriteInfo($"GET request to {requestUri} returned {(int)postResponse.StatusCode} ({getResponse.StatusCode})");
+            PrintHeaders(getResponse);
 
-                        return await ReadHttpResponseMessageAsync(getResponse);
-                    }
-                }
-
-                return await ReadHttpResponseMessageAsync(postResponse);
-            }
+            return await ReadHttpResponseMessageAsync(getResponse);
         }
+
+        return await ReadHttpResponseMessageAsync(postResponse);
     }
 
     private static async Task<GraphQLResponse?> ReadHttpResponseMessageAsync(HttpResponseMessage httpResponseMessage)
