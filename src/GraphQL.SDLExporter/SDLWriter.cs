@@ -232,7 +232,7 @@ public sealed class SDLWriter
                 ColoredConsole.WriteInfo($"Waiting 2 seconds and try again ({retry} of {MAX_RETRY}).");
                 Thread.Sleep(2000);
             }
-            }
+        }
     }
 
     private string? ConvertIntrospectionResponseToSDL(GraphQLResponse response)
