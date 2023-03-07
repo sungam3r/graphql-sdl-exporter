@@ -1,3 +1,5 @@
+#if NET7_0
+
 using PublicApiGenerator;
 using Shouldly;
 using Xunit;
@@ -16,10 +18,12 @@ public class ApiApprovalTests
         string publicApi = type.Assembly.GeneratePublicApi(new ApiGeneratorOptions
         {
             IncludeAssemblyAttributes = false,
-            WhitelistedNamespacePrefixes = new[] { "Microsoft.Extensions.DependencyInjection" },
+            AllowNamespacePrefixes = new[] { "Microsoft.Extensions.DependencyInjection" },
             ExcludeAttributes = new[] { "System.Diagnostics.DebuggerDisplayAttribute" },
         });
 
         publicApi.ShouldMatchApproved(options => options!.WithFilenameGenerator((testMethodInfo, discriminator, fileType, fileExtension) => $"{type.Assembly.GetName().Name!}.{fileType}.{fileExtension}"));
     }
 }
+
+#endif
