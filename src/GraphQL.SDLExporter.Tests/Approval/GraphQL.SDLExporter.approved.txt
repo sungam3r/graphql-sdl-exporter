@@ -32,7 +32,7 @@ namespace GraphQL.SDLExporter
     public sealed class SDLWriter
     {
         public SDLWriter() { }
-        public GraphQL.SDLExporter.CommandLineOptions Options { get; set; }
+        public GraphQL.SDLExporter.CommandLineOptions Options { get; init; }
         public int Execute() { }
     }
 }
