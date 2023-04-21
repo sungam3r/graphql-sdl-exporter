@@ -76,7 +76,7 @@ public sealed class CommandLineOptions
     [Option("out", Required = false, HelpText = "The output SDL file. If not specified, then the schema will be saved as <Source>.graphql")]
     public string? GeneratedFileName { get; set; }
 
-    /// <summary> A value indicating whether to include descriptions of types and fields in the output file. </summary>
+    /// <summary> A value indicating whether to include descriptions in the output file. </summary>
     [Option("include-descriptions", Required = false, HelpText = "Include descriptions as comments in output file")]
     public bool IncludeDescriptions { get; set; }
 

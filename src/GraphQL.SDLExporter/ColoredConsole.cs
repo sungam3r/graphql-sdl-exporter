@@ -27,6 +27,8 @@ internal static class ColoredConsole
                 to.WriteLine();
             else
                 to.WriteLine($"[{DateTime.Now:HH:mm:ss}] {text}");
+
+            // System.Diagnostics.Debug.WriteLine(text); // uncomment to see logs while debugging
         }
         finally
         {

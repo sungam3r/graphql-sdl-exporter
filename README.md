@@ -78,7 +78,7 @@ public API.
 
 ## Experimental features
 
-The tool can get information about directives if the server [supports](https://github.com/sungam3r/graphql-introspection-model/blob/master/src/GraphQL.IntrospectionModel/IntrospectionQuery.cs#L102) this feature.
+The tool can get information about directives if the server supports this feature.
 If the server does not support directive return (in this case server returns a request validation error),
 then the tool uses the classic introspection request. The [official specification](https://graphql.github.io/graphql-spec/June2018/#)
 does not describe such a possibility, although [discussions](https://github.com/graphql/graphql-spec/issues/300) are underway to expand the specification to add this feature.
