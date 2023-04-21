@@ -1,6 +1,8 @@
 using System.Diagnostics;
+using System.Text.Json;
 using GraphQL.IntrospectionModel;
 using GraphQL.IntrospectionModel.SDL;
+using GraphQLParser.Visitors;
 
 namespace GraphQL.SDLExporter;
 
@@ -122,7 +124,7 @@ public sealed class SDLWriter
 
         if (response?.Data == null)
         {
-            ColoredConsole.WriteError("Failed to get introspection response for both modern and classic introspection query.");
+            ColoredConsole.WriteError("Failed to get introspection query response");
             return 100;
         }
 
@@ -144,6 +146,37 @@ public sealed class SDLWriter
 
     private GraphQLResponse? GetIntrospectionResponseFromUrl(CancellationToken cancellationToken)
     {
+        void PrintErrors(GraphQLResponse? response, string header)
+        {
+            if (response?.Errors?.Any() == true)
+            {
+                ColoredConsole.WriteError(header);
+                foreach (var error in response.Errors)
+                    ColoredConsole.WriteError(error.Message);
+            }
+        }
+
+        GraphQLResponse? ExecuteIntrospectionVariation(GraphQLHttpClient client, string serviceUrl, string query, string type)
+        {
+            GraphQLResponse? response = null;
+
+            try
+            {
+                ColoredConsole.WriteInfo($"Sending {type} introspection query");
+                response = client.SendQueryAsync(serviceUrl, Options.ConfigureIntrospectionQuery(query), "IntrospectionQuery", cancellationToken).GetAwaiter().GetResult();
+                if (response?.Data != null)
+                    ColoredConsole.WriteInfo($"Received {type} introspection query response from {serviceUrl}");
+            }
+            catch (Exception ex)
+            {
+                ColoredConsole.WriteError($"Failed to get data for {type} introspection query: {(Options.Verbose ? ex.ToString() : ex.Message)}");
+            }
+
+            PrintErrors(response, $"Errors for {type} introspection query:");
+
+            return response?.Data == null ? null : response;
+        }
+
         cancellationToken.ThrowIfCancellationRequested();
 
         string serviceUrl = Options.FromURL ? Options.Source : Options.ServiceUrl + Options.GraphQLRelativePath;
@@ -159,59 +192,16 @@ public sealed class SDLWriter
         {
             cancellationToken.ThrowIfCancellationRequested();
 
-            GraphQLResponse? response = null;
-            ColoredConsole.WriteInfo($"Sending introspection request #{retry} to {serviceUrl}");
+            ColoredConsole.WriteInfo($"Attempt #{retry} to {serviceUrl} begins");
 
             try
             {
-                // skip modern introspection request with directives if custom introspection query was specified
-                if (Options.IntrospectionQueryFile == null)
-                {
-                    try
-                    {
-                        response = client.SendQueryAsync(serviceUrl, Options.ConfigureIntrospectionQuery(IntrospectionQuery.Modern), "IntrospectionQuery", cancellationToken).GetAwaiter().GetResult();
-                        if (response?.Data != null)
-                            ColoredConsole.WriteInfo($"Received modern introspection response from {serviceUrl}");
-                    }
-                    catch (Exception ex)
-                    {
-                        ColoredConsole.WriteError($"Failed to send modern introspection request with directives: {(Options.Verbose ? ex.ToString() : ex.Message)}");
-                    }
-                }
-
-                if (response?.Data == null || response?.Errors?.Any() == true)
-                {
-                    void TryPrintErrors(string header)
-                    {
-                        if (response?.Errors?.Any() == true)
-                        {
-                            ColoredConsole.WriteError(header);
-                            foreach (var error in response.Errors)
-                                ColoredConsole.WriteError(error.Message);
-                        }
-                    }
-
-                    TryPrintErrors("Modern introspection request with directives contains errors:");
-
-                    if (Options.IntrospectionQueryFile == null)
-                    {
-                        ColoredConsole.WriteInfo("Fallback to classic introspection request without directives");
-                        response = client.SendQueryAsync(serviceUrl, Options.ConfigureIntrospectionQuery(IntrospectionQuery.Classic), "IntrospectionQuery", cancellationToken).GetAwaiter().GetResult();
-                        if (response?.Data != null)
-                            ColoredConsole.WriteInfo($"Received classic introspection response from {serviceUrl}");
-                        TryPrintErrors("Classic introspection request without directives contains errors:");
-                    }
-                    else
-                    {
-                        ColoredConsole.WriteInfo($"Calling custom introspection query from '{Options.IntrospectionQueryFile}'.");
-                        response = client.SendQueryAsync(serviceUrl, Options.ConfigureIntrospectionQuery(File.ReadAllText(Options.IntrospectionQueryFile)), "IntrospectionQuery", cancellationToken).GetAwaiter().GetResult();
-                        if (response?.Data != null)
-                            ColoredConsole.WriteInfo($"Received introspection response from {serviceUrl}");
-                        TryPrintErrors($"Custom introspection query from '{Options.IntrospectionQueryFile}' contains errors:");
-                    }
-                }
-
-                return response;
+                return Options.IntrospectionQueryFile == null
+                    ? ExecuteIntrospectionVariation(client, serviceUrl, Options.ConfigureIntrospectionQuery(IntrospectionQuery.ModernDraft), "modern/draft") ??
+                      ExecuteIntrospectionVariation(client, serviceUrl, Options.ConfigureIntrospectionQuery(IntrospectionQuery.Modern), "modern") ??
+                      ExecuteIntrospectionVariation(client, serviceUrl, Options.ConfigureIntrospectionQuery(IntrospectionQuery.ClassicDraft), "classic/draft") ??
+                      ExecuteIntrospectionVariation(client, serviceUrl, Options.ConfigureIntrospectionQuery(IntrospectionQuery.Classic), "classic")
+                    : ExecuteIntrospectionVariation(client, serviceUrl, Options.ConfigureIntrospectionQuery(File.ReadAllText(Options.IntrospectionQueryFile)), "custom:" + Options.IntrospectionQueryFile);
             }
             catch (Exception e)
             {
@@ -239,46 +229,31 @@ public sealed class SDLWriter
     {
         if (response.Errors?.Any() == true)
         {
-            ColoredConsole.WriteError("Introspection response contains errors:");
+            ColoredConsole.WriteError("Introspection query response contains errors:");
             foreach (var error in response.Errors)
                 ColoredConsole.WriteError(error.Message);
 
             return null;
         }
 
-        if (response.Data == null)
+        if (response.Data?.__Schema == null)
         {
-            Console.WriteLine("GraphQLResponse.Data is null.");
-            return null;
-        }
-
-        var schemaToken = response.Data["__schema"];
-        if (schemaToken == null)
-        {
-            Console.WriteLine("GraphQLResponse.Data does not contain '__schema' property.");
-            return null;
-        }
-
-        var schema = schemaToken.ToObject<GraphQLSchema>();
-        if (schema == null)
-        {
-            Console.WriteLine("Could not deserialize '__schema' property from GraphQLResponse.Data to GraphQLSchema object.");
+            Console.WriteLine("Could not obtain GraphQLSchema object.");
             return null;
         }
 
         if (Options.Verbose)
         {
-            ColoredConsole.WriteInfo($"Introspection response contains {schema.Types?.Count ?? 0} types and {schema.Directives?.Count ?? 0} directives:");
-            ColoredConsole.WriteInfo(schemaToken.ToString(Newtonsoft.Json.Formatting.Indented));
-            ColoredConsole.WriteInfo("Starting transformation from introspection response (json) to SDL.");
+            ColoredConsole.WriteInfo($"Introspection query response contains {response.Data.__Schema.Types?.Count ?? 0} types and {response.Data.__Schema.Directives?.Count ?? 0} directives:");
+            ColoredConsole.WriteInfo(JsonSerializer.Serialize<object>(response.Data.__Schema));
+            ColoredConsole.WriteInfo("Starting transformation from introspection query response (json) to SDL.");
         }
 
-        string sdl = SDLBuilder.Build(schema, new SDLBuilderOptions
+        string sdl = response.Data.__Schema.Print(new ASTConverterOptions
         {
-            ArgumentComments = Options.IncludeDescriptions,
-            EnumValuesComments = Options.IncludeDescriptions,
-            FieldComments = Options.IncludeDescriptions,
-            TypeComments = Options.IncludeDescriptions,
+            PrintDescriptions = Options.IncludeDescriptions,
+            EachDirectiveLocationOnNewLine = true,
+            EachUnionMemberOnNewLine = true,
         });
 
         if (Options.Verbose)
