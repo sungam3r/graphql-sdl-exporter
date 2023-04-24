@@ -188,7 +188,9 @@ public sealed class SDLWriter
         const int MAX_RETRY = 10;
         ColoredConsole.WriteInfo($"Starting to poll {serviceUrl} with max {MAX_RETRY} attempts.");
 
-        while (true)
+        GraphQLResponse? response = null;
+
+        while (response == null && retry <= MAX_RETRY)
         {
             cancellationToken.ThrowIfCancellationRequested();
 
@@ -196,12 +198,15 @@ public sealed class SDLWriter
 
             try
             {
-                return Options.IntrospectionQueryFile == null
+                response = Options.IntrospectionQueryFile == null
                     ? ExecuteIntrospectionVariation(client, serviceUrl, Options.ConfigureIntrospectionQuery(IntrospectionQuery.ModernDraft), "modern/draft") ??
                       ExecuteIntrospectionVariation(client, serviceUrl, Options.ConfigureIntrospectionQuery(IntrospectionQuery.Modern), "modern") ??
                       ExecuteIntrospectionVariation(client, serviceUrl, Options.ConfigureIntrospectionQuery(IntrospectionQuery.ClassicDraft), "classic/draft") ??
                       ExecuteIntrospectionVariation(client, serviceUrl, Options.ConfigureIntrospectionQuery(IntrospectionQuery.Classic), "classic")
                     : ExecuteIntrospectionVariation(client, serviceUrl, Options.ConfigureIntrospectionQuery(File.ReadAllText(Options.IntrospectionQueryFile)), "custom:" + Options.IntrospectionQueryFile);
+
+                if (response != null)
+                    return response;
             }
             catch (Exception e)
             {
@@ -211,18 +216,27 @@ public sealed class SDLWriter
                     return null;
 
                 ColoredConsole.WriteError($"Make sure that it is possible to start the process at {serviceUrl} and the required port is not used by another process. Perhaps the process has not yet started and cannot serve the request.");
-
-                if (retry == MAX_RETRY)
+            }
+            finally
+            {
+                if (response == null)
                 {
-                    ColoredConsole.WriteError($"Failed to load data from {serviceUrl} for {MAX_RETRY} attempts");
-                    return null; // that's enough
-                }
+                    if (retry == MAX_RETRY)
+                    {
+                        ColoredConsole.WriteError($"Failed to load data from {serviceUrl} for {MAX_RETRY} attempts");
+                    }
+                    else
+                    {
+                        ColoredConsole.WriteInfo("Waiting 2 seconds and try again");
+                        Thread.Sleep(2000);
+                    }
 
-                ++retry;
-                ColoredConsole.WriteInfo($"Waiting 2 seconds and try again ({retry} of {MAX_RETRY}).");
-                Thread.Sleep(2000);
+                    ++retry;
+                }
             }
         }
+
+        return response;
     }
 
     private string? ConvertIntrospectionResponseToSDL(GraphQLResponse response)
