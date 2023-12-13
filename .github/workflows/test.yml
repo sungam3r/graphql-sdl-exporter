@@ -37,10 +37,9 @@ jobs:
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: |
-            3.1.x
-            5.0.x
             6.0.x
             7.0.x
+            8.0.x
           source-url: https://nuget.pkg.github.com/graphql-dotnet/index.json
         env:
           NUGET_AUTH_TOKEN: ${{secrets.GITHUB_TOKEN}}
@@ -65,7 +64,7 @@ jobs:
         if: ${{ startsWith(matrix.os, 'ubuntu') }}
         uses: codecov/codecov-action@v3
         with:
-          files: .coverage/GraphQL.SDLExporter.Tests/coverage.net7.opencover.xml
+          files: .coverage/GraphQL.SDLExporter.Tests/coverage.net8.opencover.xml
 
   buildcheck:
     needs:
