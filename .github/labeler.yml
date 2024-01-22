@@ -1,12 +1,20 @@
 tests:
-  - src/GraphQL.SDLExporter.Tests/**/*
+- changed-files:
+  - any-glob-to-any-file:
+    - src/GraphQL.SDLExporter.Tests/**/*
 
 CI:
-  - .github/workflows/**/*
-  - .github/dependabot.yml
+- changed-files:
+  - any-glob-to-any-file:
+    - .github/workflows/**/*
+    - .github/dependabot.yml
 
 code style:
-  - .editorconfig
+- changed-files:
+  - any-glob-to-any-file:
+    - .editorconfig
 
 documentation:
-  - README.md
+- changed-files:
+  - any-glob-to-any-file:
+    - README.md
