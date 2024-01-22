@@ -4,7 +4,7 @@
 
 ![License](https://img.shields.io/github/license/sungam3r/graphql-sdl-exporter)
 
-[![codecov](https://codecov.io/gh/sungam3r/graphql-sdl-exporter/branch/master/graph/badge.svg?token=UJPTEBC73U)](https://codecov.io/gh/sungam3r/graphql-sdl-exporter)
+[![codecov](https://codecov.io/gh/sungam3r/graphql-sdl-exporter/graph/badge.svg?token=UJPTEBC73U)](https://codecov.io/gh/sungam3r/graphql-sdl-exporter)
 [![Nuget](https://img.shields.io/nuget/dt/dotnet-sdlexport)](https://www.nuget.org/packages/dotnet-sdlexport)
 [![NuGet](https://img.shields.io/nuget/v/dotnet-sdlexport)](https://www.nuget.org/packages/dotnet-sdlexport)
 
