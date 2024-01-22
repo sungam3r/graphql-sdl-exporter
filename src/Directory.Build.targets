@@ -1,11 +1,5 @@
 <Project>
 
-  <PropertyGroup Condition="'$(IsTestProject)' == 'true'">
-    <CoverletOutputFormat>opencover</CoverletOutputFormat>
-    <CoverletOutput>$(MSBuildThisFileDirectory)../.coverage/$(AssemblyName)/</CoverletOutput>
-    <Exclude></Exclude>
-  </PropertyGroup>
-
   <PropertyGroup Condition="'$(IsPackable)' == 'true'">
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <PackageReleaseNotes>See https://github.com/sungam3r/graphql-sdl-exporter/releases</PackageReleaseNotes>
