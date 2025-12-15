@@ -37,9 +37,8 @@ jobs:
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: |
-            6.0.x
-            7.0.x
             8.0.x
+            10.0.x
           source-url: https://nuget.pkg.github.com/graphql-dotnet/index.json
         env:
           NUGET_AUTH_TOKEN: ${{secrets.GITHUB_TOKEN}}
@@ -62,7 +61,7 @@ jobs:
         run: dotnet test --no-build -p:CollectCoverage=true -p:CoverletOutputFormat=opencover -p:CoverletOutput=../.coverage/
       - name: Upload coverage to codecov
         if: ${{ startsWith(matrix.os, 'ubuntu') }}
-        uses: codecov/codecov-action@v4
+        uses: codecov/codecov-action@v5
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           files: src/.coverage/*.opencover.xml
