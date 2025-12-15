@@ -118,6 +118,9 @@ enum ASIAlgorithm {
   HIVDB_9_4_1
   HIVDB_9_5_0
   HIVDB_9_5_1
+  HIVDB_9_6
+  HIVDB_9_7
+  HIVDB_9_8
   ANRS_26
   ANRS_27
   ANRS_27stanford2
@@ -127,6 +130,7 @@ enum ASIAlgorithm {
   ANRS_31
   ANRS_32
   ANRS_33
+  ANRS_34
   Rega_9_1
   Rega_10_0
 }
@@ -189,6 +193,7 @@ enum CommentType {
   Accessory
   NRTI
   NNRTI
+  Uncertain
   Other
   Dosage
 }
@@ -326,6 +331,7 @@ enum DrugEnum {
   D4T
   DDI
   DOR
+  DPV
   DRV
   DTG
   EFV
@@ -722,7 +728,7 @@ type MutationsAnalysis {
   "List of drug resistance results by genes."
   drugResistance(
     "One of the built-in ASI algorithms."
-    algorithm: ASIAlgorithm = HIVDB_9_5_1,
+    algorithm: ASIAlgorithm = HIVDB_9_8,
     "Genes to be included in the results"
     includeGenes: [EnumGene] = [PR, RT, IN]): [DrugResistance]
   "List of ASI comparison results."
@@ -1028,7 +1034,7 @@ type SequenceAnalysis {
   "List of drug resistance results by genes."
   drugResistance(
     "One of the built-in ASI algorithms."
-    algorithm: ASIAlgorithm = HIVDB_9_5_1,
+    algorithm: ASIAlgorithm = HIVDB_9_8,
     "Genes to be included in the results"
     includeGenes: [EnumGene] = [PR, RT, IN]): [DrugResistance]
   "List of ASI comparison results."
@@ -1137,7 +1143,7 @@ type SequenceReadsAnalysis {
   "List of drug resistance results by genes."
   drugResistance(
     "One of the built-in ASI algorithms."
-    algorithm: ASIAlgorithm = HIVDB_9_5_1,
+    algorithm: ASIAlgorithm = HIVDB_9_8,
     "Genes to be included in the results"
     includeGenes: [EnumGene] = [PR, RT, IN]): [DrugResistance]
   "List of ASI comparison results."

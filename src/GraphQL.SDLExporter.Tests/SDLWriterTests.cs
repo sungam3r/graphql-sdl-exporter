@@ -12,7 +12,7 @@ public class SDLWriterTests
     /// <summary>
     /// Basic export test 1.
     /// </summary>
-    [Fact]
+    [Fact(Skip = "swapi-graphql.netlify.com is gone")]
     public void Export_Should_Work_1()
     {
         const string name = "swapi.graphql";
