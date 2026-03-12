@@ -27,7 +27,8 @@
   <Folder Name="/Solution Items/">
     <File Path="../.editorconfig" />
     <File Path="../.gitignore" />
-    <File Path="../assets/logo.64x64.png" />
+    <File Path="../.globalconfig" />
+    <File Path="../assets/icon.png" />
     <File Path="../LICENSE.md" />
     <File Path="../README.md" />
     <File Path="Directory.Build.props" />
