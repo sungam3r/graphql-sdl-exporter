@@ -5,12 +5,15 @@
     <GenerateAssemblyInfo>true</GenerateAssemblyInfo>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
-    <CurrentYear>$([System.DateTime]::Now.ToString(yyyy))</CurrentYear>
     <Authors>Maximov Ivan</Authors>
+    <ProductName>graphql-sdl-exporter</ProductName>
+    <PackageReleaseNotes>See https://github.com/sungam3r/graphql-sdl-exporter/releases</PackageReleaseNotes>
+    <CurrentYear>$([System.DateTime]::Now.ToString(yyyy))</CurrentYear>
     <Copyright>Copyright © $(Authors) 2019-$(CurrentYear)</Copyright>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
-    <PackageIcon>logo.64x64.png</PackageIcon>
+    <PackageIcon>icon.png</PackageIcon>
+    <PackageIconUrl>https://raw.githubusercontent.com/sungam3r/graphql-sdl-exporter/refs/heads/master/assets/icon.png</PackageIconUrl>
     <RepositoryType>git</RepositoryType>
     <DebugType>embedded</DebugType>
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
@@ -19,8 +22,15 @@
     <ContinuousIntegrationBuild Condition="'$(GITHUB_ACTIONS)' == 'true'">True</ContinuousIntegrationBuild>
     <Nullable>enable</Nullable>
     <EnableNETAnalyzers>true</EnableNETAnalyzers>
+    <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
     <IsPackable>true</IsPackable>
     <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="DotNetProjectFile.Analyzers" Version="1.11.0" PrivateAssets="all" />
+    <PackageReference Include="Roslynator.Analyzers" Version="4.15.0" PrivateAssets="all" />
+    <PackageReference Include="Roslynator.Formatting.Analyzers" Version="4.15.0" PrivateAssets="all" />
+  </ItemGroup>
 
 </Project>
