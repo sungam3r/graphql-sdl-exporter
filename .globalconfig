@@ -34,6 +34,9 @@ dotnet_diagnostic.Proj0300.severity = suggestion
 dotnet_diagnostic.Proj0400.severity = suggestion
 # https://github.com/dotnet-project-file-analyzers/dotnet-project-file-analyzers/blob/main/docs/rules/Proj0453.md
 dotnet_diagnostic.Proj0453.severity = suggestion
+# TODO: remove after migrate to xunit.v3
+# https://github.com/dotnet-project-file-analyzers/dotnet-project-file-analyzers/blob/main/docs/rules/Proj0501.md
+dotnet_diagnostic.Proj0501.severity = suggestion
 # https://github.com/dotnet-project-file-analyzers/dotnet-project-file-analyzers/blob/main/docs/rules/Proj0800.md
 dotnet_diagnostic.Proj0800.severity = suggestion
 # https://github.com/dotnet-project-file-analyzers/dotnet-project-file-analyzers/blob/main/docs/rules/Proj1003.md
